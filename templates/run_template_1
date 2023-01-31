@@ -1,0 +1,25 @@
+#!/bin/bash
+#SBATCH --job-name=$OUTNAME_$COMPOUND
+#SBATCH --output=mpi_$OUTNAME_$COMPOUND.out
+#SBATCH --error=mpi_$OUTNAME_$COMPOUND.err
+#SBATCH --ntasks=$PROCESSORS
+#SBATCH --time=00-8:00:00
+#SBATCH --qos=bsc_ls
+
+module purge
+module load ANACONDA/2019.10
+module load intel mkl impi gcc # 2> /dev/null
+module load impi
+module load boost/1.64.0
+
+eval "$(conda shell.bash hook)"
+
+conda activate /gpfs/projects/bsc72/conda_envs/platform/1.6.3
+
+python -m pele_platform.main /gpfs/projects/bsc72/bsc72772/CDK2/PELE_tests/results/$OUTNAME/$COMPOUND.yaml
+
+python ../../scripts/generate_results.py --workDIR ../../results/$OUTNAME/$COMPOUND
+
+python ../../scripts/recover_connectivity.py ../../$LIGSDIR/$COMPOUND_prep.pdb --pdb_target ../../results/$OUTNAME/$COMPOUND/output/topologies/topology_0.pdb -lc L -lt L
+
+python /gpfs/projects/bsc72/COVID/COVID_VS_analysis/HBCounter.py ../../results/$OUTNAME/$COMPOUND/ -r report -n $PROCESSORS -t output/topologies/topology_0.pdb -o hbonds.out
