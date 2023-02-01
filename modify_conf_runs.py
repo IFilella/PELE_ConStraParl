@@ -26,15 +26,17 @@ if __name__ == '__main__':
     springConstant = args.springConstant
     equilibriumDistance = args.equilibriumDistance
     strain = args.strain
+    
+    current_dir = os.getcwd()    
 
-    compounds = glob.glob('%s/*.yaml'%resdir)
+    compounds = glob.glob('%s/%s/*.yaml'%(current_dir,resdir))
     compounds = [os.path.basename(comp).replace('.yaml','') for comp in compounds]
 
     #Change debug mode to false in yaml files
     for compound in compounds:
-        with open(resdir+compound+".yaml", "r") as sources:
+        with open(current_dir + '/' + resdir+compound+".yaml", "r") as sources:
             lines = sources.readlines()
-        with open(resdir+compound+".yaml", "w") as sources:
+        with open(current_dir + '/' + resdir+compound+".yaml", "w") as sources:
             for line in lines:
                 sources.write(line.replace('debug: true','restart: true'))
 
@@ -42,7 +44,7 @@ if __name__ == '__main__':
     if HBfilter != None:
         chain0,res0,atom0 = HBfilter.split('-')
         for compound in compounds:
-            grep_process = subprocess.Popen(['grep',res0+'-'+atom0,HBlistdir+'/%s.txt'%compound], stdout=subprocess.PIPE)
+            grep_process = subprocess.Popen(['grep',res0+'-'+atom0,current_dir + '/' + HBlistdir+'/%s.txt'%compound], stdout=subprocess.PIPE)
             grep_out, grep_err = grep_process.communicate()
             grep_out = grep_out.decode("utf-8").replace("\n","")
             if grep_out == "":
@@ -67,7 +69,7 @@ if __name__ == '__main__':
             _atom0, _atom1 = atomlist
             const = '{ \"type\": \"constrainAtomsDistance\", \"springConstant\": %s, \"equilibriumDistance\": %s, \"constrainThisAtom\": \"%s:%s:%s\", \"toThisOtherAtom\": \"%s:%s:%s\"  },'%(springConstant,equilibriumDistance,chain1,res1[3:],_atom1,chain0,res0[3:],_atom0)
             print(compound)
-            peleconf = resdir+compound+'/pele.conf'
+            peleconf = current_dir + '/' + resdir+compound+'/pele.conf'
             with open(peleconf, "r") as infile:
                 lines = infile.readlines()
             with open(peleconf, "w") as outfile:
@@ -80,7 +82,7 @@ if __name__ == '__main__':
         metric = '\n                        { \"type\": \"internalEnergy\",\n                           \"atomSetSelection\": { \"chains\": { \"names\": [\"L\"]  }  }\n                        },\n\n'
         for compound in compounds:
             print(compound)
-            peleconf = resdir+compound+'/pele.conf'
+            peleconf = current_dir + '/' + resdir+compound+'/pele.conf'
             with open(peleconf, "r") as infile:
                 lines = infile.readlines()
             with open(peleconf, "w") as outfile:
