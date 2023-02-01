@@ -33,22 +33,24 @@ if __name__ == '__main__':
     compounds = glob.glob('%s/*_prep.pdb'%(ligsdir))
     compounds = [os.path.basename(compound).split('_prep.pdb')[0] for compound in compounds]
 
+    current_dir = os.getcwd()
+
     #Create runs and results directory
-    if not os.path.isdir('runs'):
-        os.mkdir('runs')
-    if not os.path.isdir('runs/%s'%outname):
-        os.mkdir('runs/%s'%outname)
-    if not os.path.isdir('results'):
-        os.mkdir('results')
-    if not os.path.isdir('results/%s'%(outname)):
-        os.mkdir('results/%s'%(outname))
+    if not os.path.isdir('%s/runs'%current_dir):
+        os.mkdir('%s/runs'%current_dir)
+    if not os.path.isdir('%s/runs/%s'%(current_dir, outname)):
+        os.mkdir('%s/runs/%s'%(current_dir, outname))
+    if not os.path.isdir('%s/results'%current_dir):
+        os.mkdir('%s/results'%current_dir)
+    if not os.path.isdir('%s/results/%s'%(current_dir, outname)):
+        os.mkdir('%s/results/%s'%(current_dir, outname))
 
 
-    batchfile0 = open('runs/%s_batch_0.sh'%(outname),'w')
-    batchfile1 = open('runs/%s_batch_1.sh'%(outname),'w')
+    batchfile0 = open('%s/runs/%s_batch_0.sh'%(current_dir, outname),'w')
+    batchfile1 = open('%s/runs/%s_batch_1.sh'%(current_dir, outname),'w')
     if strain:
-        batchfile2 = open('runs/%s_batch_2.sh'%(outname),'w')
-        batchfile3 = open('runs/%s_batch_3.sh'%(outname),'w')
+        batchfile2 = open('%s/runs/%s_batch_2.sh'%(current_dir, outname),'w')
+        batchfile3 = open('%s/runs/%s_batch_3.sh'%(current_dir, outname),'w')
     for compound in compounds:
         cmd = 'python scripts/generate_files.py --LIGSdir %s -o %s --compound %s -n %s'%(ligsdir,outname,compound,n)
         if center != [None,None,None]:
@@ -78,12 +80,12 @@ if __name__ == '__main__':
         #    cmd += ' --strain'
         print(cmd)
         os.system(cmd)
-        batchfile0.write('sbatch %s/run_%s_0\n'%(outname,compound))
-        batchfile1.write('sbatch %s/run_%s_1\n'%(outname,compound))
+        batchfile0.write('sbatch %s/runs/%s/run_%s_0\n'%(current_dir,outname,compound))
+        batchfile1.write('sbatch %s/runs/%s/run_%s_1\n'%(current_dir,outname,compound))
         if strain:
-            batchfile2.write('python ../scripts/ligand_minimization.py -f ../%s/%s_prep.pdb -d ../results/%s/%s -r LIG -lf ../results/%s/%s_min\n'%(os.path.dirname(ligsdir),compound,outname,compound,outname,compound))
-            batchfile3.write('python ../scripts/disc.py -d ../results/%s/%s_min/output/ -c 4\n'%(outname,compound))
-            batchfile3.write('python ../scripts/corrector.py -d ../results/%s/%s -lf ../results/%s/%s_min --skip_strain_per_cluster\n'%(outname,compound,outname,compound))
+            batchfile2.write('python %s/scripts/ligand_minimization.py -f %s/%s/%s_prep.pdb -d %s/results/%s/%s -r LIG -lf %s/results/%s/%s_min\n'%(current_dir, current_dir, os.path.dirname(ligsdir),compound, current_dir, outname,compound,current_dir, outname,compound))
+            batchfile3.write('python %s/scripts/disc.py -d %s/results/%s/%s_min/output/ -c 4\n'%(current_dir,current_dir,outname,compound))
+            batchfile3.write('python %s/scripts/corrector.py -d %s/results/%s/%s -lf %s/results/%s/%s_min --skip_strain_per_cluster\n'%(current_dir, current_dir, outname,compound, current_dir, outname,compound))
     batchfile0.close()
     batchfile1.close()
     if strain:

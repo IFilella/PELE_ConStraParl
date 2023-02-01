@@ -16,4 +16,4 @@ eval "$(conda shell.bash hook)"
 
 conda activate /gpfs/projects/bsc72/conda_envs/platform/1.6.3
 
-python -m pele_platform.main ../../results/$OUTNAME/$COMPOUND.yaml
+python -m pele_platform.main $CURRENT/results/$OUTNAME/$COMPOUND.yaml

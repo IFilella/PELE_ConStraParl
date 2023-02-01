@@ -12,7 +12,7 @@ if __name__ == '__main__':
                                                   'simulation. Docked compounds can be filtered by a Glide feature'
                                                   ' (feature_filter and value_filter) when a Glide table is provided'
                                                   ' (csv).')
-    parser.add_argument('--LIGSdir', dest="LIGSdir", help = "Directory with the docked compounds",required=True)
+    parser.add_argument('--LIGSdir', dest="LIGSdir", help = "Directory with the docked compounds (This must be in PDB format)",required=True)
     parser.add_argument('--target_pdb', dest="target_pdb", help = "Target PDB",required=True)
     parser.add_argument('-o', dest="outname", help = "Prefix to save the COMPLEXES which will be used as input "
                                                      "for the PELE simulation"
@@ -31,6 +31,7 @@ if __name__ == '__main__':
 
     #Parse inputs
     LIGSdir = args.LIGSdir
+    if LIGSdir[-1] != '/': LIGSdir = LIGSdir + '/'
     target_pdb = args.target_pdb
     complexname = args.outname
     data = args.csv
