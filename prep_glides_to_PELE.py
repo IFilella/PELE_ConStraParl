@@ -5,6 +5,9 @@ import argparse
 from MolecularAnalysis import sts_analysis as sts
 from MolecularAnalysis import mollib
 import mdtraj as md
+import numpy as np
+import biotite.structure.io.pdb as pdb
+import biotite.structure.hbond as hbonds
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description ='Given a directory with multiple compounds (LIGSdir) docked to a '
@@ -29,6 +32,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+
+    softHB = 'biotite'
     #Parse inputs
     LIGSdir = args.LIGSdir
     if LIGSdir[-1] != '/': LIGSdir = LIGSdir + '/'
@@ -109,17 +114,32 @@ if __name__ == '__main__':
 
         #If asked compute a list of all Hydrogen Bonds of the complex
         if HBlist:
-            pdbcomplex = md.load_pdb(prepCOMPLEX)
-            #The criterion employed to compute an hbond is: theta > 120 and d(HAcceptor) < 2.5A both in at least 10% of the trajectory
-            hbonds = md.baker_hubbard(pdbcomplex, periodic=False)
-            #List of hbonds (row of three elements: index of the donor atom, index of the hydrogen atom and index of the acceptor atom)
-            #Define label function to parse the hbonds
-            label = lambda hbond : '%s -- %s' % (pdbcomplex.topology.atom(hbond[0]), pdbcomplex.topology.atom(hbond[2]))
-            f = open('%s/%s.txt'%(HBdir,fullname),'w')
-            for hbond in hbonds:
-                l = label(hbond)
-                f.write(l+'\n')
-            f.close()
+            if softHB == 'biotite':
+                pdb_file = pdb.PDBFile.read(prepCOMPLEX)
+                pdbcomplex = pdb_file.get_structure()
+                triplets, mask = hbonds(pdbcomplex)
+                triplets = np.squeeze(triplets)
+                f = open('%s/%s.txt'%(HBdir,fullname),'w')
+                for hbond in triplets:
+                    D_idx = hbond[0]
+                    A_idx = hbond[2]
+                    D = pdbcomplex[0,D_idx].res_name + str(pdbcomplex[0,D_idx].res_id) + '-' + pdbcomplex[0,D_idx].atom_name
+                    A = pdbcomplex[0,A_idx].res_name + str(pdbcomplex[0,A_idx].res_id) + '-' +  pdbcomplex[0,A_idx].atom_name
+                    f.write('%s -- %s\n'%(D,A))
+                f.close()
+            elif softHB == 'mdtraj':
+                pdbcomplex = md.load_pdb(prepCOMPLEX)
+                #The criterion employed to compute an hbond is: theta > 120 and d(HAcceptor) < 2.5A both in at least 10% of the trajectory
+                hbonds = md.baker_hubbard(pdbcomplex, periodic=False)
+                #hbonds = np.squeeze(md.wernet_nilsson(pdbcomplex, periodic=False))
+                #List of hbonds (row of three elements: index of the donor atom, index of the hydrogen atom and index of the acceptor atom)
+                #Define label function to parse the hbonds
+                label = lambda hbond : '%s -- %s' % (pdbcomplex.topology.atom(hbond[0]), pdbcomplex.topology.atom(hbond[2]))
+                f = open('%s/%s.txt'%(HBdir,fullname),'w')
+                for hbond in hbonds:
+                    l = label(hbond)
+                    f.write(l+'\n')
+                f.close()
 
 
         #Add connections to LIGs_prep
