@@ -84,6 +84,8 @@ if __name__ == '__main__':
                             outfile.write(line)
                     infile.close()
                     outfile.close()
+                    print('Compound %s is going to be const at atom %s with LIG'%(compound,const))
+
 
         if strain:
             metric = '\n                        { \"type\": \"internalEnergy\",\n                           \"atomSetSelection\": { \"chains\": { \"names\": [\"L\"]  }  }\n                        },\n\n'
@@ -95,3 +97,4 @@ if __name__ == '__main__':
                     if '\"metrics\"' in line:
                         line+=metric
                     outfile.write(line)
+        print('-----------------------')
