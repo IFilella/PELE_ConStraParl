@@ -7,10 +7,11 @@ if __name__ == '__main__':
     parser.add_argument('-o', dest="outname", help = "",required=True)
     parser.add_argument('--compound', dest="compound", help = "",required=True)
     parser.add_argument('-n', dest="n", help = "Number of processors",required=True)
-    parser.add_argument('--HBfilter', dest="HBfilter", help = "HB filter", nargs='+', default=[None,None])
+    parser.add_argument('--HBconsts', dest="HBconsts", help = "HB constrain", nargs='+', action='append', default=None)
     parser.add_argument('--center', dest="center", help = "", nargs='+', default=[None,None,None])
     parser.add_argument('--truncated',dest='truncated',help='',action='store_true',default=False)
     #parser.add_argument('--strain',dest='strain',help='', action='store_true',default=False)
+    parser.add_argument('--HBanalysis',dest='HBanalysis',help='', action='store_true',default=False)
     args = parser.parse_args()
 
     #Parse inputs
@@ -20,21 +21,17 @@ if __name__ == '__main__':
     outname = args.outname
     compound = args.compound
     n = args.n
-    HBfilter = args.HBfilter
-    if len(HBfilter) > 2:
-        raise ValueError('HBfilter argument must have only two elements')
+    HBconsts = args.HBconsts
     center = args.center
     if len(center) != 3:
         raise ValueError('If given, the center must be 3D')
     truncated = args.truncated
-    #strain = args.strain
-    
+    HBanalysis = args.HBanalysis
+    if HBanalysis and not HBconsts:
+        raise ValueError('If HBanalysis set as true then you need at least one HBconst')
+
     current_dir = os.getcwd()
 
-    #if not os.path.isdir('runs'):
-    #    os.mkdir('runs')
-    #if not os.path.isdir('runs/%s'%outname):
-    #    os.mkdir('runs/%s'%outname)
     if truncated:
         runinp0 = open('%s/templates/run_template_0_trunc'%current_dir,'r')
     else:
@@ -77,13 +74,14 @@ if __name__ == '__main__':
     runout1.close()
 
 
-    if HBfilter != [None,None]:
+    if HBanalysis:
         runout1 = open('%s/runs/%s/run_%s_1'%(current_dir,outname,compound),'a')
-        runout1.write('\n')
-        chain,residue,atom = HBfilter[0].split('-')
-        cmd = 'python /gpfs/projects/bsc72/COVID/COVID_VS_analysis/FilteringAndClustering.py %s/results/%s/%s/ -n %s --ie_col 5 --rmsd_col 7 -t output/topologies/conntopology_0.pdb -b 2.5 -g2 %s:%s:%s --minimum_g2_conditions 1 -o filtering_results_HB --generate_plots --hbonds_path hbonds.out'%(current_dir,outname,compound,n,chain,residue,atom)
-        runout1.write(cmd)
-        runout1.close()
+        for const in HBconsts:
+            runout1.write('\n')
+            chain,residue,atom = const[0].split('-')
+            cmd = 'python /gpfs/projects/bsc72/COVID/COVID_VS_analysis/FilteringAndClustering.py %s/results/%s/%s/ -n %s --ie_col 5 --rmsd_col 7 -t output/topologies/conntopology_0.pdb -b 2.5 -g2 %s:%s:%s --minimum_g2_conditions 1 -o filtering_results_HB --generate_plots --hbonds_path hbonds.out'%(current_dir,outname,compound,n,chain,residue,atom)
+            runout1.write(cmd)
+            runout1.close()
 
     os.system('chmod +x %s/runs/%s/run_%s_0'%(current_dir, outname,compound))
     os.system('chmod +x %s/runs/%s/run_%s_1'%(current_dir, outname,compound))
@@ -108,12 +106,13 @@ if __name__ == '__main__':
             line = line.replace('$CURRENT',current_dir)
         yamlout.write(line)
 
-    if HBfilter != [None,None]:
-        chain0,residue0,atom0 = HBfilter[0].split('-')
-        chain1,residue1,atom1 = HBfilter[1].split('-')
-        yamlout.write('atom_dist:\n')
-        yamlout.write('  - \"%s:%s:%s\"\n'%(chain0,residue0[3:],atom0))
-        yamlout.write('  - \"%s:%s:%s\"\n'%(chain1,residue1[3:],atom1))
+    if HBconsts:
+        for i,const in enumerate(HBconsts):
+            chain0,residue0,atom0 = const[0].split('-')
+            chain1,residue1,atom1 = const[1].split('-')
+            if i == 0: yamlout.write('atom_dist:\n')
+            yamlout.write('  - \"%s:%s:%s\"\n'%(chain0,residue0[3:],atom0))
+            yamlout.write('  - \"%s:%s:%s\"\n'%(chain1,residue1[3:],atom1))
 
     if center!=[None,None,None]:
         yamlout.write('box_center:\n')
