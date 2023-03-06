@@ -693,64 +693,86 @@ def residence_calculator(df,pele_steps):
 
     return df_residence
 
+def getCluster(df1,cluster_label):
+    """
+    Get entries by cluster label
+    """
+    return df1[df1['Cluster'] == cluster_label]
 
+def calculateMetrics(df,binding_energy_label='BindingEnergy',total_energy_label='currentEnergy',value_T=298.):
+    """
+    Calculate the three scorings (average BE, minimum BE, Boltzman weighted) for the given dataframe
+    """
+    be = df[binding_energy_label].to_numpy()
+    average = np.average(be)
+    minimum = np.amin(be)
+    boltzmann = boltzmann_weighted(df,binding_energy_label,total_energy_label,value_T)
+    return average, minimum, boltzmann
 
+def cluster_pop(df,binding_energy_label='BindingEnergy',total_energy_label='currentEnergy',value_T=298.):
+    """
+    Calculate the metrics for the most populated cluster
+    """
+    df = getCluster(df,'0')
+    average, minimum, boltzmann = calculateMetrics(df,binding_energy_label,total_energy_label,value_T=value_T)
+    return df, average, minimum, boltzmann
 
+def cluster_energy(df1,binding_energy_label='BindingEnergy',total_energy_label='currentEnergy',value_T=298.):
+    """
+    Calculate three scorings for the the cluster with less minimum, average and boltzmann energies.
+    """
+    # Create storing dictionaries
+    average_cluster = {}
+    minimum_cluster = {}
+    boltzmann_cluster = {}
+    BFE_cluster = {}
 
+    # Group by different clusters if they are numeric
+    for group in df1.groupby(by='Cluster'):
+        if group[0].isnumeric():
+            df = group[1]
+            be = df['BindingEnergy'].to_numpy()
 
+            # Calculating metrics for the different clusters
+            average = np.average(be)
+            minimum = np.amin(be)
+            boltzmann = boltzmann_weighted(df,binding_energy_label,total_energy_label, value_T)
+            BFE = bindingFreeEnergy(df)
 
+            # Assigning value of scoring to each cluster
+            average_cluster[group[0]] = average
+            minimum_cluster[group[0]] = minimum
+            boltzmann_cluster[group[0]] = boltzmann
+            BFE_cluster[group[0]] = BFE
 
+    # Selecting the cluster with lowest value for each scoring.
+    cluser_lowest_average = min(average_cluster, key=average_cluster.get)
+    cluser_lowest_minimum = min(minimum_cluster, key=minimum_cluster.get)
+    cluser_lowest_boltzmann = min(boltzmann_cluster, key=boltzmann_cluster.get)
+    cluser_lowest_BFE = min(BFE_cluster,key=BFE_cluster.get)
 
+    # Keeping the dataframe with only the entries belonging to the corresponding cluster
+    df_average = getCluster(df1, str(cluser_lowest_average))
+    df_minimum = getCluster(df1, str(cluser_lowest_minimum))
+    df_boltzmann = getCluster(df1, str(cluser_lowest_boltzmann))
+    df_BFE = getCluster(df1,str(cluser_lowest_BFE))
 
+    # Calculate three scorings for all the clusters
+    average_average, average_minimum, average_boltzmann = calculateMetrics(df_average,binding_energy_label,total_energy_label, value_T=value_T)
+    minimum_average, minimum_minimum, minimum_boltzmann = calculateMetrics(df_minimum,binding_energy_label,total_energy_label, value_T=value_T)
+    boltzmann_average, boltzmann_minimum, boltzmann_boltzmann = calculateMetrics(df_boltzmann,binding_energy_label,total_energy_label, value_T=value_T)
+    BFE_average, BFE_minimum, BFE_boltzmann = calculateMetrics(df_BFE, binding_energy_label,total_energy_label, value_T=value_T)
 
+    # Calculate binding free energy for all the clusters
+    average_bfe = bindingFreeEnergy(df_average)
+    minimum_bfe = bindingFreeEnergy(df_minimum)
+    boltzmann_bfe = bindingFreeEnergy(df_boltzmann)
+    BFE_bfe = bindingFreeEnergy(df_BFE)
 
+    # Storing result
+    average_result = {cluser_lowest_average: np.array([average_average, average_minimum, average_boltzmann,average_bfe])}
+    minimum_result = {cluser_lowest_minimum: np.array([minimum_average, minimum_minimum, minimum_boltzmann,minimum_bfe])}
+    boltzmann_result = {cluser_lowest_boltzmann: np.array([boltzmann_average, boltzmann_minimum, boltzmann_boltzmann,boltzmann_bfe])}
+    BFE_result = {cluser_lowest_BFE: np.array([BFE_average, BFE_minimum, BFE_boltzmann, BFE_bfe])}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return average_result, minimum_result, boltzmann_result, BFE_result
