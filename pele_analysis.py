@@ -28,7 +28,7 @@ if __name__ == '__main__':
     #Get a .csv of all PELE simulations with PELE metrics and if required glide gscore
     f_out =  open('%s_pelemetrics.csv'%outname,'w')
     if glide_csv:
-        header = 'molecule,SMILE,maxtanimoto,glidegscore,all_avgBE,all_minBE,all_BZM,all_BFE,pop_avgBE,pop_minBE,pop_BZM,pop_BFE,lowavg_avgBE,lowavg_minBE,lowavg_BZM,lowavg_BFE,lowBE_avgBE,lowBE_minBE,lowBE_BZM,lowBE_BFE,lowBZM_avgBE,lowBZM_minBE,lowBZM_BZM,lowBZM_BFE,lowBFE_avgBE,lowBFE_minBE,lowBFE_BZM,lowBFE_BFE'
+        header = 'molecule,SMILE,batch,maxtanimoto,glidegscore,all_avgBE,all_minBE,all_BZM,all_BFE,pop_avgBE,pop_minBE,pop_BZM,pop_BFE,lowavg_avgBE,lowavg_minBE,lowavg_BZM,lowavg_BFE,lowBE_avgBE,lowBE_minBE,lowBE_BZM,lowBE_BFE,lowBZM_avgBE,lowBZM_minBE,lowBZM_BZM,lowBZM_BFE,lowBFE_avgBE,lowBFE_minBE,lowBFE_BZM,lowBFE_BFE'
         glide_df = pd.read_csv(glide_csv)
     else:
         header = 'molecule,all_avgBE,all_minBE,all_BZM,all_BFE,pop_avgBE,pop_minBE,pop_BZM,pop_BFE,lowavg_avgBE,lowavg_minBE,lowavg_BZM,lowavg_BFE,lowBE_avgBE,lowBE_minBE,lowBE_BZM,lowBE_BFE,lowBZM_avgBE,lowBZM_minBE,lowBZM_BZM,lowBZM_BFE,lowBFE_avgBE,lowBFE_minBE,lowBFE_BZM,lowBFE_BFE'
@@ -45,6 +45,7 @@ if __name__ == '__main__':
             glidegscore = row['r_i_glide_gscore'].min()
             maxtanimoto = row['maxtanimoto'].max()
             smile = row['SMILES'].iloc[0]
+            batch = row['batch'].iloc[0]
         #PELE data
         pele_data = '%sanalysis/data.csv'%(molecules_out[i])
         try:
@@ -77,7 +78,7 @@ if __name__ == '__main__':
         lowBFE_avgBE, lowBFE_minBE, lowBFE_BZM, lowBFE_BFE = lowBFE_dict[lowBFE_dict_key]
 
         if glide_csv:
-            f_out.write('%s,%s,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f\n'%(molecule,smile,maxtanimoto,glidegscore,all_avgBE,all_minBE,all_BZM,all_BFE,pop_avgBE,pop_minBE,pop_BZM,pop_BFE,lowavg_avgBE,lowavg_minBE,lowavg_BZM,lowavg_BFE,lowBE_avgBE,lowBE_minBE,lowBE_BZM,lowBE_BFE,lowBZM_avgBE,lowBZM_minBE,lowBZM_BZM,lowBZM_BFE,lowBFE_avgBE,lowBFE_minBE,lowBFE_BZM,lowBFE_BFE))
+            f_out.write('%s,%s,%s,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f\n'%(molecule,smile,batch,maxtanimoto,glidegscore,all_avgBE,all_minBE,all_BZM,all_BFE,pop_avgBE,pop_minBE,pop_BZM,pop_BFE,lowavg_avgBE,lowavg_minBE,lowavg_BZM,lowavg_BFE,lowBE_avgBE,lowBE_minBE,lowBE_BZM,lowBE_BFE,lowBZM_avgBE,lowBZM_minBE,lowBZM_BZM,lowBZM_BFE,lowBFE_avgBE,lowBFE_minBE,lowBFE_BZM,lowBFE_BFE))
         else:
             f_out.write('%s,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f\n'%(molecule,all_avgBE,all_minBE,all_BZM,all_BFE,pop_avgBE,pop_minBE,pop_BZM,pop_BFE,lowavg_avgBE,lowavg_minBE,lowavg_BZM,lowavg_BFE,lowBE_avgBE,lowBE_minBE,lowBE_BZM,lowBE_BFE,lowBZM_avgBE,lowBZM_minBE,lowBZM_BZM,lowBZM_BFE,lowBFE_avgBE,lowBFE_minBE,lowBFE_BZM,lowBFE_BFE))
     f_out.close()
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     f_in = open('%s_pelemetrics.csv'%outname,'r')
     f_out = open('%s.csv'%outname,'w')
     if glide_csv:
-        header = 'molecule,smile,maxtanimoto,glidegscore,all_minBE,%s\n'%metric
+        header = 'molecule,smile,batch,maxtanimoto,glidegscore,all_minBE,%s\n'%metric
     else:
         header = 'molecule,all_minBE,%s\n'%metric
     f_out.write(header)
@@ -104,7 +105,7 @@ if __name__ == '__main__':
         molecule = line[0]
         print('-', i, molecule)
         if glide_csv:
-            f_out.write('%s,%s,%s,%s,%s,%s\n'%(molecule,line[1],line[2],line[3],line[idx_minBE],line[idx_metric]))
+            f_out.write('%s,%s,%s,%s,%s,%s,%s\n'%(molecule,line[1],line[2],line[3],line[4],line[idx_minBE],line[idx_metric]))
         else:
             f_out.write('%s,%s,%s\n'%molecule,line[idx_minBE],line[idx_metric])
 
