@@ -3,8 +3,10 @@ import argparse
 import glob
 import pandas as pd
 import numpy as np
-import functions
 import os
+import sys
+sys.path.append('scripts/')
+import functions
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description ='')
@@ -107,7 +109,7 @@ if __name__ == '__main__':
         if glide_csv:
             f_out.write('%s,%s,%s,%s,%s,%s,%s\n'%(molecule,line[1],line[2],line[3],line[4],line[idx_minBE],line[idx_metric]))
         else:
-            f_out.write('%s,%s,%s\n'%molecule,line[idx_minBE],line[idx_metric])
+            f_out.write('%s,%s,%s\n'%(molecule,line[idx_minBE],line[idx_metric]))
 
         #Get poses
         poses_path = '%s%s/analysis/top_poses'%(pele_output,molecule)
@@ -124,7 +126,7 @@ if __name__ == '__main__':
             for line in lines:
                 if 'END' not in line:
                     f.write(line)
-        cmd = 'python recover_connectivity.py %s%s_prep.pdb --pdb_target %s_poses/%s.pdb -lc L -lt L'%(ligs_dir,molecule,outname,molecule)
+        cmd = 'python scripts/recover_connectivity.py %s%s_prep.pdb --pdb_target %s_poses/%s.pdb -lc L -lt L'%(ligs_dir,molecule,outname,molecule)
         os.system(cmd)
     f_in.close()
     f_out.close()
