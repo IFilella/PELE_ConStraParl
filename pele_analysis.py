@@ -53,7 +53,7 @@ if __name__ == '__main__':
             header = header.replace('maxtanimoto,','')
         glide_df = pd.read_csv(glide_csv)
     else:
-        header = header.replace('smile,','').replace('charge,','').replace('batch,','').replace('maxtanimoto,','')
+        header = header.replace('smile,','').replace('charge,','').replace('batch,','').replace('maxtanimoto,','').replace('glidegscore,','')
     f_out.write(header+'\n')
     for i,molecule in enumerate(molecules):
         print('-', i+1, molecule)
@@ -142,11 +142,12 @@ if __name__ == '__main__':
         if i==0:
             idx_metric = line.index(metric)
             idx_minBE = line.index('all_minBE')
-            if smile: idx_smile = line.index('smile')
-            if batch: idx_batch = line.index('batch')
-            if maxtanimoto: idx_maxtanimoto = line.index('maxtanimoto')
-            if charge: idx_charge = line.index('charge')
-            idx_glidegscore = line.index('glidegscore')
+            if glide_csv:
+                if smile: idx_smile = line.index('smile')
+                if batch: idx_batch = line.index('batch')
+                if maxtanimoto: idx_maxtanimoto = line.index('maxtanimoto')
+                if charge: idx_charge = line.index('charge')
+                idx_glidegscore = line.index('glidegscore')
             continue
         molecule = line[0]
         print('-', i, molecule)
@@ -155,7 +156,7 @@ if __name__ == '__main__':
             if smile: f_out.write('%s,'%line[idx_smile])
             if batch: f_out.write('%s,'%line[idx_batch])
             if maxtanimoto: f_out.write('%s,'%line[idx_maxtanimoto])
-            if charge: f_out.write('%s,'line[idx_charge])
+            if charge: f_out.write('%s,'%line[idx_charge])
             f_out.write('%s,'%line[idx_glidegscore])
         f_out.write('%s,%s\n'%(line[idx_minBE],line[idx_metric]))
 
