@@ -816,8 +816,8 @@ def corrector(input_folder,
         if 'ligand.pdb' in list_input_files:
             list_input_files.remove('ligand.pdb')
 
-        #topology_file = os.path.join(path_pl_simulation,'input',list_input_files[0])
-	topology_file = os.path.join(path_pl_simulation,'output','topologies','topologies_0.pdb')
+        topology_file = os.path.join(path_pl_simulation,'input',list_input_files[0])
+	#topology_file = os.path.join(path_pl_simulation,'output','topologies','topologies_0.pdb')
         with open(path_to_run, 'w') as fileout:
 
             fileout.writelines(
