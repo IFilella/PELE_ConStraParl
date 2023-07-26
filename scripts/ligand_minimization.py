@@ -422,7 +422,7 @@ def ligand_prepare(input_folder,
                 '#SBATCH --output=PELEne.out\n'
                 '#SBATCH --error=PELEne.err\n'
                 '#SBATCH --ntasks=48\n'
-                '#SBATCH --qos=debug\n'
+                '#SBATCH --qos=bsc_ls\n'
                 '#SBATCH --time=02:00:00\n'
                 '\n'
                 'module purge\n'

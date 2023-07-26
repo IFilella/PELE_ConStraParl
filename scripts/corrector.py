@@ -826,7 +826,7 @@ def corrector(input_folder,
                 '#SBATCH --output=analysis.out\n'
                 '#SBATCH --error=analysis.err\n'
                 '#SBATCH --ntasks=1\n'
-                '#SBATCH --qos=debug\n'
+                '#SBATCH --qos=bsc_ls\n'
                 '#SBATCH --time=00-00:30:00\n'
                 '\n'
                 'module load ANACONDA/2019.10\n'
