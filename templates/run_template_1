@@ -4,17 +4,16 @@
 #SBATCH --error=mpi_$OUTNAME_$COMPOUND.err
 #SBATCH --ntasks=$PROCESSORS
 #SBATCH --time=00-8:00:00
-#SBATCH --qos=bsc_ls
+#SBATCH --qos=gp_bscls
 
 module purge
-module load ANACONDA/2019.10
-module load intel mkl impi gcc # 2> /dev/null
-module load impi
-module load boost/1.64.0
+module load anaconda
+module load intel mkl impi cmake
+module load transfer
+module load bsc
 
 eval "$(conda shell.bash hook)"
-
-conda activate /gpfs/projects/bsc72/conda_envs/platform/1.6.3
+source activate /gpfs/projects/bsc72/conda_envs/platform
 
 python -m pele_platform.main $CURRENT/results/$OUTNAME/$COMPOUND.yaml
 

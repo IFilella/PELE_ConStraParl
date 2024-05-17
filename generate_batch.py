@@ -86,8 +86,8 @@ if __name__ == '__main__':
             cmd += ' --truncated'
         #print(cmd)
         os.system(cmd)
-        batchfile0.write('sbatch %s/runs/%s/run_%s_0\n'%(current_dir,outname,compound))
-        batchfile1.write('sbatch %s/runs/%s/run_%s_1\n'%(current_dir,outname,compound))
+        batchfile0.write('sbatch -A bsc72 %s/runs/%s/run_%s_0\n'%(current_dir,outname,compound))
+        batchfile1.write('sbatch -A bsc72 %s/runs/%s/run_%s_1\n'%(current_dir,outname,compound))
         if strain:
             batchfile2.write('python %s/scripts/ligand_minimization.py -f %s/%s/%s_prep.pdb -d %s/results/%s/%s -r LIG -lf %s/results/%s/%s_min\n'%(current_dir, current_dir, os.path.dirname(ligsdir),compound, current_dir, outname,compound,current_dir, outname,compound))
             batchfile3.write('python %s/scripts/disc.py -d %s/results/%s/%s_min/output/ -c 4\n'%(current_dir,current_dir,outname,compound))
