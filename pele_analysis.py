@@ -1,4 +1,4 @@
-from MolecularAnalysis import mollib
+from MolecularAnalysis.mol import Mol
 import argparse
 import glob
 import pandas as pd
@@ -72,7 +72,7 @@ if __name__ == '__main__':
             if batch:
                 bat = row['batch'].iloc[0]
             if charge:
-                mol = mollib.Mol(smile=smile)
+                mol = Mol(smile=smile)
                 netcharge = Chem.rdmolops.GetFormalCharge(mol.mol)
         #PELE data
         pele_data = '%sanalysis/data.csv'%(molecules_out[i])

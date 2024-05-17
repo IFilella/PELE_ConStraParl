@@ -2,8 +2,8 @@ from prody import *
 import glob
 import os
 import argparse
-from MolecularAnalysis import sts_analysis as sts
-from MolecularAnalysis import mollib
+from MolecularAnalysis.analysis import sts
+from MolecularAnalysis.moldb import MolDB
 import mdtraj as md
 import numpy as np
 import biotite.structure.io.pdb as pdb
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     #Apply Glide feature filter by creating an auxiliary dataframe (datafiltered)
     if feature_filter != None:
-        data = sts.load_maestro_data(data)
+        data = sts.loadSchrodingerCSV(data)
         data = data[['Job Name','Title',feature_filter]]
         datafiltered = data[(data[feature_filter] <= value_filter )]
         print(datafiltered)
@@ -152,7 +152,7 @@ if __name__ == '__main__':
         toinclude.close()
 
     if sdf_out != None:
-        DB = mollib.MolDB(pdbList=prepLIGs,chirality=False)
+        DB = MolDB(pdbList=prepLIGs,chirality=False)
         print('%d prepared molecules loaded into a MolDB object'%len(DB.dicDB.keys()))
         DB.filter_similarity()
         print('%d prepared molecules after filtering them by similarity'%len(DB.dicDB.keys()))
