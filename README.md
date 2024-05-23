@@ -2,6 +2,8 @@
 
 This repository is dedicated to preparing PELE adaptive simulations in MN5. It generates the file system needed to execute PELE ligand refinement simulations, starting from docked ligands.
 
+## Repository features:
+
 In addition to regular PELE refinement simulations starting from docked ligands, this repository incorporates the following options:
 
 - Parallel Execution: It can execute multiple ligand refinements in parallel against a single target.
