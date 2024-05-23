@@ -6,9 +6,13 @@ In addition to regular PELE refinement simulations starting from docked ligands,
 
 - Parallel Execution: It can execute multiple ligand refinements in parallel against a single target.
 - Predicted Binding Free Energy (BFE): It can compute the predicted PELE binding free energy for each ligand.
-  $$ <E^b> = \sum^{N}_{i} p_{i} E^{b}_{i} $$,
-  where N is the total number of accepted PELE steps, $E^{b}_{i}$ the binding energy between the target and the ligand in the $i$ accepted PELE step, and $p_{i}$ the probabilities obtained from a Boltzmann distribution using the N sampled complex (target-ligand) total energies:
-  $$p_i=\frac{e^{E^t_i / KT}}{Q} \space Q = \Sum^{N}_{i}e^{E^t_i /KT}$$
+
+  $$ <E^b> = \sum^{N}_{i} p_{i} E^{b}_{i} $$
+  
+  where N is the total number of accepted PELE steps, E^b_i the binding energy between the target and the ligand in the $i$ accepted PELE step, and p_i the probabilities obtained from a Boltzmann distribution using the N sampled complex (target-ligand) total energies:
+  
+  $$p_i=\frac{e^{E^t_i / KT}}{Q} \space Q = \sum^{N}_{i}e^{E^t_i /KT}$$
+  
 - Constrained Refinement: Given a chemical constraint (currently, only hydrogen bonds are implemented), it can incorporate this constraint into the PELE refinement simulation of each ligand.
 - Strain Energy Correction: It can adjust the binding free energies of the accepted PELE steps and the resulting PELE BFE by accounting for the ligand strain energy. To do so, short PELE simulations of the ligand with implicit solvent are performed to determine the ligand's minimal energy (using a temperature of 1500K and a single PELE epoch with 2,000 steps). For each accepted PELE step, the strain energy of the ligand is calculated by subtracting the minimal energy from the internal energy of the ligand. Finally, the corrected binding free energy for each accepted PELE step is obtained by adding the strain energy to the binding energy.
 
