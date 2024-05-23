@@ -826,16 +826,17 @@ def corrector(input_folder,
                 '#SBATCH --output=analysis.out\n'
                 '#SBATCH --error=analysis.err\n'
                 '#SBATCH --ntasks=1\n'
-                '#SBATCH --qos=bsc_ls\n'
+                '#SBATCH --qos=gp_debug\n'
                 '#SBATCH --time=00-00:30:00\n'
                 '\n'
-                'module load ANACONDA/2019.10\n'
-                'module load intel mkl impi gcc # 2> /dev/null\n'
-                'module load impi\n'
-                'module load boost/1.64.0\n'
+                'module purge'
+                'module load anaconda\n'
+                'module load intel mkl impi gcc cmake\n'
+                'module load transfer\n'
+                'module load bsc\n'
                 '\n'
                 'eval "$(conda shell.bash hook)"\n'
-                'conda activate /gpfs/projects/bsc72/conda_envs/platform/1.6.3\n'
+                'conda activate /gpfs/projects/bsc72/conda_envs/platform\n'
                 '\n'
                 'python script.py\n'
             )
@@ -1108,7 +1109,7 @@ def corrector(input_folder,
         #
 
         os.chdir(path_pl_simulation)
-        os.system("sbatch %s" % path_to_run)
+        os.system("sbatch -A bsc72 %s" % path_to_run)
 
         #
         print(' ')
