@@ -18,3 +18,31 @@ In addition to regular PELE refinement simulations starting from docked ligands,
 
 ## Execution workflow:
 
+* Input data:
+  - **Docked ligands in a LIGS directory (ligands in individual PDB files without the target).**
+  - **Prepared target protein (in PDB).**
+  - (optional) Output table of the docking to filter ligands by properties in .csv format.
+ 
+1) `prep_glides_to_PELE.py`
+   **This script generates a COMPLEXES directory containing PDBs with the target and the ligands prepared for PELE.**
+   (optional) It can create an HBList directory containing each complex's inter- and intra-molecular hydrogen bond interactions.
+   (optional) It can produce an SDF file containing ligands that meet the specified property filters (requires the output table).
+
+2) `generate_batch.py`
+   **This script creates the execution files needed for each ligand to complete the PELE simulation and puts them into a new runs directory.**
+   - runs_0_ligandX: SLURM script generating the subdirectory for the PELE simulations of ligandX.
+   - batch_0: Batch file to execute all run_0_ligandX scripts in parallel.
+   - runs_1_ligandX: SLURM script executing the PELE simulation of ligandX.
+   - batch_1: Batch file to execute all run_1_ligandX scripts in parallel.
+   - runs: Directory where all run and batch files will be stored.
+   - results: Directory where all simulation output subdirectories and PELE configuration files will be stored.
+  
+3) `batch_0.sh`
+   **This script generates the PELE configuration file (yaml PELE conf files) and the PELE simulation subdirectory within the results directory for each ligand.**
+   It initiates PELE simulations subdirectories and halts PELE simulation.
+
+4) `modify_conf_runs.py`
+   **This script modifies the PELE configuration file (yaml PELE conf files) to include possible constraints (optional) and retrieve ligand internal energy for strain energy correction (optional) for each ligand.**
+   Adds atom-atom constraints to pele.conf based on specified HB constraints.
+   If strain correction is enabled, it incorporates the internal energy of the ligand into the report.
+  
