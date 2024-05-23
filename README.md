@@ -45,4 +45,11 @@ In addition to regular PELE refinement simulations starting from docked ligands,
    **This script modifies the PELE configuration file (yaml PELE conf files) to include possible constraints (optional) and retrieve ligand internal energy for strain energy correction (optional) for each ligand.**
    Adds atom-atom constraints to pele.conf based on specified HB constraints.
    If strain correction is enabled, it incorporates the internal energy of the ligand into the report.
-  
+
+5) `batch_1.sh`
+   **This script will start all PELE simulations**
+
+6) `batch_2.sh`
+   **If strain correction enabled, this script will run short PELE simulations, one for each compound (to get its minimal energy)**
+
+7) `batch_3.sh`
