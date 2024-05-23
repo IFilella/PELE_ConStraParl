@@ -34,130 +34,57 @@ if __name__ == '__main__':
 
 
     softHB = 'biotite'
+    current_path = os.getcwd()
+
     #Parse inputs
-    LIGSdir = args.LIGSdir
-    if LIGSdir[-1] != '/': LIGSdir = LIGSdir + '/'
-    target_pdb = args.target_pdb
+    LIGSdir = current_path + '/' + args.LIGSdir
+    target_pdb = current_path + '/' + args.target_pdb
     complexname = args.outname
-    data = args.csv
+    if args.csv:
+        data = current_path + '/' + args.csv
+    else:
+        data = args.csv
     feature_filter = args.feature_filter
-    if args.value_filter != None:
+    if args.value_filter:
         value_filter = float(args.value_filter)
-    sdf_out = args.sdf_out
+    else:
+        value_filter = args.value_filter
+    if args.sdf_out:
+        sdf_out = current_path + '/' + args.sdf_out
+    else:
+        sdf_out = args.sdf_out
     HBlist = args.HBlist
 
-    TARGdir = os.path.dirname(target_pdb)
-    structureTARG = parsePDB('%s'%(target_pdb))
-
-    #If missing create a COMPLEX directory
-    COMPLEXESdir = '/'.join(os.path.dirname(LIGSdir).split('/')[0:-1]) + '/COMPLEXES'
-    if not os.path.isdir(COMPLEXESdir):
-        os.mkdir(COMPLEXESdir)
-    LIGS = glob.glob('%s/*.pdb'%LIGSdir)
-
-    #If needed create an HBlist directory
+    cmd = 'python scripts/prep_files.py --LIGSdir %s --target_pdb %s -o %s' % (LIGSdir, target_pdb, complexname)
     if HBlist:
-        HBdir = '/'.join(os.path.dirname(LIGSdir).split('/')[0:-1]) + '/HBlists'
-    if not os.path.isdir(HBdir):
-        os.mkdir(HBdir)
+        cmd += ' --HBlist'
+    if data:
+        cmd += ' --csv %s' % data
+    if value_filter:
+        cmd += ' --value_filter %s' % value_filter
+    if feature_filter:
+        cmd += ' --feature_filter %s' % feature_filter
+    if sdf_out:
+        cmd += ' --sdf_out %s' % sdf_out
 
-    #Apply Glide feature filter by creating an auxiliary dataframe (datafiltered)
-    if feature_filter != None:
-        data = sts.loadSchrodingerCSV(data)
-        data = data[['Job Name','Title',feature_filter]]
-        datafiltered = data[(data[feature_filter] <= value_filter )]
-        print(datafiltered)
-        print('- Filter of %.3f applied on %s '%(value_filter,feature_filter))
-        print('- From %d without filter to %d compounds with filter'%(len(set(data['Title'].tolist())),len(set(datafiltered['Title'].tolist()))))
-    else:
-        datafiltered = data
-
-    count_preparedLIGS = 0
-    prepLIGs = []
-    for LIG in LIGS:
-        name = os.path.basename(LIG)
-        name = name.replace('.pdb','')
-        name = name.split('_') #To remove the identifier of multiple docking poses/chirality for the same LIG
-        fullname = '_'.join(name)
-        if len(name) > 1:
-            name = '_'.join(name[0:-1])
-        else:
-            name = '_'.join(name)
-        if feature_filter != None:
-            dataaux = datafiltered[(datafiltered['Title'] == name)] #Get the rows representing all compound poses
-            if dataaux.shape[0] == 0:
-                if feature_filter != None:
-                    print('%s didn\'t pass the %s filter'%(name,feature_filter))
-                else:
-                    print('%s wasn\'t in the maestro data table'%name)
-                continue
-            else:
-                idx = dataaux[feature_filter].idxmin() #Select the min feature value for a lig with multiple poses/chirality
-                print('%s has a %s of %.3f (below %.3f). We prepare it for a further PELE simulation.'%(fullname,feature_filter,datafiltered[feature_filter][idx],value_filter))
-
-        count_preparedLIGS+=1
-        #Change LIGS chain name to L and resid to LIG
-        structureLIG = parsePDB('%s'%(LIG))
-        hvLIG = structureLIG.getHierView()
-        for chain in hvLIG:
-            chain.setChid('L')
-            for res in chain:
-                res.setResname('LIG')
-        prepLIG = '%s%s_prep.pdb'%(LIGSdir,fullname)
-        writePDB(prepLIG,structureLIG)
-        prepLIGs.append(prepLIG)
-
-        #Merge Target and Ligand
-        structureCOMPLEX = structureTARG + structureLIG
-        prepCOMPLEX = '%s/%s_%s.pdb'%(COMPLEXESdir,complexname,fullname)
-        writePDB(prepCOMPLEX,structureCOMPLEX)
-
-        #If asked compute a list of all Hydrogen Bonds of the complex
-        if HBlist:
-            if softHB == 'biotite':
-                pdb_file = pdb.PDBFile.read(prepCOMPLEX)
-                pdbcomplex = pdb_file.get_structure()
-                triplets, mask = hbonds(pdbcomplex)
-                triplets = np.squeeze(triplets)
-                f = open('%s/%s.txt'%(HBdir,fullname),'w')
-                for hbond in triplets:
-                    D_idx = hbond[0]
-                    A_idx = hbond[2]
-                    D = pdbcomplex[0,D_idx].res_name + str(pdbcomplex[0,D_idx].res_id) + '-' + pdbcomplex[0,D_idx].atom_name
-                    A = pdbcomplex[0,A_idx].res_name + str(pdbcomplex[0,A_idx].res_id) + '-' +  pdbcomplex[0,A_idx].atom_name
-                    f.write('%s -- %s\n'%(D,A))
-                f.close()
-            elif softHB == 'mdtraj':
-                pdbcomplex = md.load_pdb(prepCOMPLEX)
-                #The criterion employed to compute an hbond is: theta > 120 and d(HAcceptor) < 2.5A both in at least 10% of the trajectory
-                hbonds = md.baker_hubbard(pdbcomplex, periodic=False)
-                #hbonds = np.squeeze(md.wernet_nilsson(pdbcomplex, periodic=False))
-                #List of hbonds (row of three elements: index of the donor atom, index of the hydrogen atom and index of the acceptor atom)
-                #Define label function to parse the hbonds
-                label = lambda hbond : '%s -- %s' % (pdbcomplex.topology.atom(hbond[0]), pdbcomplex.topology.atom(hbond[2]))
-                f = open('%s/%s.txt'%(HBdir,fullname),'w')
-                for hbond in hbonds:
-                    l = label(hbond)
-                    f.write(l+'\n')
-                f.close()
-
-
-        #Add connections to LIGs_prep
-        toextend = open('%s/%s_prep.pdb'%(LIGSdir,fullname),'a')
-        toinclude = open('%s/%s.pdb'%(LIGSdir,fullname),'r')
-        for line in toinclude:
-            if 'CONECT' in line or 'END' in line:
-                toextend.write(line)
-        toextend.close()
-        toinclude.close()
-
-    if sdf_out != None:
-        DB = MolDB(pdbList=prepLIGs,chirality=False)
-        print('%d prepared molecules loaded into a MolDB object'%len(DB.dicDB.keys()))
-        DB.filter_similarity()
-        print('%d prepared molecules after filtering them by similarity'%len(DB.dicDB.keys()))
-        for k in DB.dicDB.keys():
-            print(DB.dicDB[k][1])
-        DB.save_MolDB_sdf(sdf_out)
-
-    print('%s molecules preapred for PELE run'%count_preparedLIGS)
+    with open('prepligs.sh', 'w') as fileout:
+        fileout.writelines(
+                '#!/bin/bash\n'
+                '#SBATCH --job-name=prepligs\n'
+                '#SBATCH --output=prepligs.out\n'
+                '#SBATCH --error=prepligs.err\n'
+                '#SBATCH --ntasks=1\n'
+                '#SBATCH --qos=gp_debug'
+                '#SBATCH --time=01:00:00\n'
+                '\n'
+                'module load anaconda\n'
+                'module load intel mkl impi gcc cmake\n'
+                'module load transfer\n'
+                'module load bsc\n'
+                '\n'
+                'eval \"$(conda shell.bash hook)\"\n'
+                'source activate PELE_ConStraParl\n'
+                '%s' % cmd)
+    
+    os.system('sbatch -A bsc72 prepligs.sh')
+    os.system('rm prepligs.*')
