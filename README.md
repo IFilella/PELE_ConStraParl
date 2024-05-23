@@ -6,7 +6,7 @@ In addition to regular PELE refinement simulations starting from docked ligands,
 
 - Parallel Execution: It can execute multiple ligand refinements in parallel against a single target.
 - Predicted Binding Free Energy (BFE): It can compute the predicted PELE binding free energy for each ligand.
-  $$ <E^b> = \Sum^{N}_{i}p_{i}E^{b}_{i} $$,
+  $$ <E^b> = \sum^{N}_{i} p_{i} E^{b}_{i} $$,
   where N is the total number of accepted PELE steps, $E^{b}_{i}$ the binding energy between the target and the ligand in the $i$ accepted PELE step, and $p_{i}$ the probabilities obtained from a Boltzmann distribution using the N sampled complex (target-ligand) total energies:
   $$p_i=\frac{e^{E^t_i / KT}}{Q} \space Q = \Sum^{N}_{i}e^{E^t_i /KT}$$
 - Constrained Refinement: Given a chemical constraint (currently, only hydrogen bonds are implemented), it can incorporate this constraint into the PELE refinement simulation of each ligand.
