@@ -422,15 +422,16 @@ def ligand_prepare(input_folder,
                 '#SBATCH --output=PELEne.out\n'
                 '#SBATCH --error=PELEne.err\n'
                 '#SBATCH --ntasks=48\n'
-                '#SBATCH --qos=bsc_ls\n'
+                '#SBATCH --qos=gp_bscls\n'
                 '#SBATCH --time=02:00:00\n'
                 '\n'
                 'module purge\n'
-                'module load intel mkl impi gcc\n'
-                'module load impi\n'
-                'module load boost/1.64.0\n'
+                'module load anaconda\n'
+                'module load intel mkl impi gcc cmake\n'
+                'module load transfer\n'
+                'module load bsc\n'
                 '\n'
-                'mpirun -np 48 /gpfs/projects/bsc72/PELE++/mniv/V1.7.2-b5/bin/PELE-1.7_mpi --control-file ' +
+                'mpirun -np 48 /gpfs/projects/bsc72/PELE++/mnv/1.8.1b1/bin/PELE_mpi --control-file ' +
                 path_ligand + '/pele.conf --license-directory /gpfs/projects/bsc72/PELE++/license\n'
             )
 
@@ -444,13 +445,13 @@ def ligand_prepare(input_folder,
                 '#SBATCH --ntasks=48\n'
                 '#SBATCH --time=00-05:00:00\n'
                 '\n'
-                'module load ANACONDA/2019.10\n'
-                'module load intel mkl impi gcc\n'
-                'module load impi\n'
-                'module load boost/1.64.0\n'
+                'module load anaconda\n'
+                'module load intel mkl impi gcc cmake\n'
+                'module load transfer\n'
+                'module load bsc\n'
                 '\n'
                 'eval "$(conda shell.bash hook)"\n'
-                'conda activate /gpfs/projects/bsc72/conda_envs/platform/1.6.3\n'
+                'conda activate /gpfs/projects/bsc72/conda_envs/platform\n'
                 '\n'
                 'python script.py\n'
             )
@@ -507,7 +508,7 @@ def ligand_prepare(input_folder,
         print(' ')
 
         os.chdir(path_ligand)
-        os.system("sbatch %s" % path_to_run)
+        os.system("sbatch -A bsc72 %s" % path_to_run)
 
     else:
 
