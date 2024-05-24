@@ -84,14 +84,14 @@ if __name__ == '__main__':
                         cmd += ' --HBconsts %s %s'%(_grep_out[0], _grep_out[1])
         if truncated:
             cmd += ' --truncated'
-        #print(cmd)
+        if strain:
+            cmd += ' --strain'
         os.system(cmd)
         batchfile0.write('sbatch -A bsc72 %s/runs/%s/run_%s_0\n'%(current_dir,outname,compound))
         batchfile1.write('sbatch -A bsc72 %s/runs/%s/run_%s_1\n'%(current_dir,outname,compound))
         if strain:
-            batchfile2.write('python %s/scripts/ligand_minimization.py -f %s/%s/%s_prep.pdb -d %s/results/%s/%s -r LIG -lf %s/results/%s/%s_min\n'%(current_dir, current_dir, os.path.dirname(ligsdir),compound, current_dir, outname,compound,current_dir, outname,compound))
-            batchfile3.write('python %s/scripts/disc.py -d %s/results/%s/%s_min/output/ -c 4\n'%(current_dir,current_dir,outname,compound))
-            batchfile3.write('python %s/scripts/corrector.py -d %s/results/%s/%s -lf %s/results/%s/%s_min --skip_strain_per_cluster\n'%(current_dir, current_dir, outname,compound, current_dir, outname,compound))
+            batchfile2.write('sbatch -A bsc72 %s/runs/%s/run_%s_2\n'%(current_dir,outname,compound))
+            batchfile3.write('sbatch -A bsc72 %s/runs/%s/run_%s_3\n'%(current_dir,outname,compound))
         print('-----------------------')
     batchfile0.close()
     batchfile1.close()

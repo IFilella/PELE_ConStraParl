@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=$OUTNAME_$COMPOUND
-#SBATCH --output=mpi_$OUTNAME_$COMPOUND.out
-#SBATCH --error=mpi_$OUTNAME_$COMPOUND.err
+#SBATCH --job-name=1_$OUTNAME_$COMPOUND
+#SBATCH --output=mpi_1_$OUTNAME_$COMPOUND.out
+#SBATCH --error=mpi_1_$OUTNAME_$COMPOUND.err
 #SBATCH --ntasks=$PROCESSORS
 #SBATCH --time=00-8:00:00
 #SBATCH --qos=gp_bscls

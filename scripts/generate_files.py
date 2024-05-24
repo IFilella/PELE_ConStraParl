@@ -10,7 +10,7 @@ if __name__ == '__main__':
     parser.add_argument('--HBconsts', dest="HBconsts", help = "HB constrain", nargs='+', action='append', default=None)
     parser.add_argument('--center', dest="center", help = "", nargs='+', default=[None,None,None])
     parser.add_argument('--truncated',dest='truncated',help='',action='store_true',default=False)
-    #parser.add_argument('--strain',dest='strain',help='', action='store_true',default=False)
+    parser.add_argument('--strain',dest='strain',help='', action='store_true',default=False)
     parser.add_argument('--HBanalysis',dest='HBanalysis',help='', action='store_true',default=False)
     parser.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True) 
     args = parser.parse_args()
@@ -31,6 +31,7 @@ if __name__ == '__main__':
     if HBanalysis and not HBconsts:
         raise ValueError('If HBanalysis set as true then you need at least one HBconst')
     simulation = args.simulation
+    strain = args.strain
 
     current_dir = os.getcwd()
 
@@ -70,12 +71,51 @@ if __name__ == '__main__':
             line = line.replace('$COMPOUND',compound)
         if '$PROCESSORS' in line:
             line = line.replace('$PROCESSORS',n)
-        if '$CURRENT':                                                                                                                                                                             line = line.replace('$CURRENT',current_dir)
+        if '$CURRENT':
+            line = line.replace('$CURRENT',current_dir)
         runout1.write(line)
 
     runinp1.close()
     runout1.close()
 
+    if strain:
+        runinp2 = open('%s/templates/run_template_2'%current_dir,'r')
+        runout2 = open('%s/runs/%s/run_%s_2'%(current_dir, outname, compound),'w')
+
+        for line in runinp2:
+            if '$LIGSDIR' in line:
+                line = line.replace('$LIGSDIR',ligsdir)
+            if '$OUTNAME' in line:
+                line = line.replace('$OUTNAME',outname)
+            if '$COMPOUND' in line:
+                line = line.replace('$COMPOUND',compound)
+            if '$CURRENT':
+                line = line.replace('$CURRENT',current_dir)
+            runout2.write(line)
+    
+        os.system('chmod +x %s/runs/%s/run_%s_2'%(current_dir, outname,compound))
+        runinp2.close()
+        runout2.close()
+
+        runinp3 = open('%s/templates/run_template_3'%current_dir,'r')
+        runout3 = open('%s/runs/%s/run_%s_3'%(current_dir, outname, compound),'w')
+ 
+        for line in runinp3:
+            if '$LIGSDIR' in line:
+                line = line.replace('$LIGSDIR',ligsdir)
+            if '$OUTNAME' in line:
+                line = line.replace('$OUTNAME',outname)
+            if '$COMPOUND' in line:
+                line = line.replace('$COMPOUND',compound)
+            if '$PROCESSORS' in line:
+                line = line.replace('$PROCESSORS',n)
+            if '$CURRENT':
+                line = line.replace('$CURRENT',current_dir)
+            runout3.write(line)
+    
+        os.system('chmod +x %s/runs/%s/run_%s_3'%(current_dir, outname,compound))
+        runinp3.close()
+        runout3.close()
 
     if HBanalysis:
         runout1 = open('%s/runs/%s/run_%s_1'%(current_dir,outname,compound),'a')
