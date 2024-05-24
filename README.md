@@ -31,7 +31,7 @@ In addition to regular PELE refinement simulations starting from docked ligands,
    (optional) It can produce an SDF file containing ligands that meet the specified property filters (requires the output table).
 
 3) `generate_batch.py`<br>
-   **This script creates the execution files needed for each ligand to complete the PELE simulation and puts them into a new runs directory. **<br>
+   **This script creates the execution files needed for each ligand to complete the PELE simulation and puts them into a new runs directory.** <br>
    - runs_0_ligandX: SLURM script generating the subdirectory for the PELE simulations of ligandX.
    - batch_0: Batch file to execute all run_0_ligandX scripts in parallel.
    - runs_1_ligandX: SLURM script executing the PELE rescoring simulation of ligandX.
@@ -57,7 +57,7 @@ In addition to regular PELE refinement simulations starting from docked ligands,
 
 7) `batch_2.sh` <br>
    **If strain correction is enabled, this script will run short PELE simulations, one for each compound (to get its minimal energy)** <br>
-   This script can be run simultaneously with batch_1.sh script!
+   <u>This script can be run simultaneously with batch_1.sh script!</u>
 
 8) `batch_3.sh` <br>
    **If strain correction is enabled, this script will apply it to all binding free energies of the rescoring simulation and the resulting PELE BFE** <br>
