@@ -75,7 +75,7 @@ if __name__ == '__main__':
                 'module load bsc\n'
                 '\n'
                 'eval \"$(conda shell.bash hook)\"\n'
-                'source activate PELE_ConStraParl\n'
+                'source activate /gpfs/projects/bsc72/conda_envs/PELE_ConStraParl\n'
                 '%s' % cmd)
     
     os.system('sbatch -A bsc72 prepligs.sh')
