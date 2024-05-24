@@ -3,16 +3,18 @@ import os
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description ='')
-    parser.add_argument('--LIGSdir', dest="LIGSdir", help = "Directory with the docked compounds",required=True)
-    parser.add_argument('-o', dest="outname", help = "",required=True)
-    parser.add_argument('--compound', dest="compound", help = "",required=True)
-    parser.add_argument('-n', dest="n", help = "Number of processors",required=True)
+    requiredArguments = parser.add_argument_group('required arguments')
+    requiredArguments.add_argument('--LIGSdir', dest="LIGSdir", help = "Directory with the docked compounds",required=True)
+    requiredArguments.add_argument('-o', dest="outname", help = "",required=True)
+    requiredArguments.add_argument('--compound', dest="compound", help = "",required=True)
+    requiredArguments.add_argument('-n', dest="n", help = "Number of processors",required=True)
     parser.add_argument('--HBconsts', dest="HBconsts", help = "HB constrain", nargs='+', action='append', default=None)
     parser.add_argument('--center', dest="center", help = "", nargs='+', default=[None,None,None])
     parser.add_argument('--truncated',dest='truncated',help='',action='store_true',default=False)
     parser.add_argument('--strain',dest='strain',help='', action='store_true',default=False)
     parser.add_argument('--HBanalysis',dest='HBanalysis',help='', action='store_true',default=False)
-    parser.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True) 
+    requiredArguments.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True) 
+    requiredArguments.add_argument('--partition', dest='partition', help='MN5 partition either gpp or acc', required=True)
     args = parser.parse_args()
 
     #Parse inputs
@@ -32,6 +34,12 @@ if __name__ == '__main__':
         raise ValueError('If HBanalysis set as true then you need at least one HBconst')
     simulation = args.simulation
     strain = args.strain
+    if partition == 'gpp':
+        qos = 'gp'
+    elif partition == 'acc':
+        qos = 'acc'
+    else:
+        raise ValueError('Partition must be either gpp or acc')
 
     current_dir = os.getcwd()
 
@@ -56,6 +64,8 @@ if __name__ == '__main__':
             line = line.replace('$PROCESSORS',n)
         if '$CURRENT':
             line = line.replace('$CURRENT',current_dir)
+        if '$QOS' in line:
+            line = line.replace('$QOS',qos)
         runout0.write(line)
 
     runinp0.close()
@@ -73,6 +83,8 @@ if __name__ == '__main__':
             line = line.replace('$PROCESSORS',n)
         if '$CURRENT':
             line = line.replace('$CURRENT',current_dir)
+        if '$QOS' in line:
+            line = line.replace('$QOS',qos)
         runout1.write(line)
 
     runinp1.close()
@@ -91,6 +103,8 @@ if __name__ == '__main__':
                 line = line.replace('$COMPOUND',compound)
             if '$CURRENT':
                 line = line.replace('$CURRENT',current_dir)
+            if '$QOS' in line:
+                line = line.replace('$QOS',qos)
             runout2.write(line)
     
         os.system('chmod +x %s/runs/%s/run_%s_2'%(current_dir, outname,compound))
@@ -111,6 +125,8 @@ if __name__ == '__main__':
                 line = line.replace('$PROCESSORS',n)
             if '$CURRENT':
                 line = line.replace('$CURRENT',current_dir)
+            if '$QOS' in line:
+                line = line.replace('$QOS',qos)
             runout3.write(line)
     
         os.system('chmod +x %s/runs/%s/run_%s_3'%(current_dir, outname,compound))

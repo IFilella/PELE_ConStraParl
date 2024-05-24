@@ -7,9 +7,10 @@ if __name__ == '__main__':
                                                   'simulation. Docked compounds can be filtered by a Glide feature'
                                                   ' (feature_filter and value_filter) when a Glide table is provided'
                                                   ' (csv).')
-    parser.add_argument('--LIGSdir', dest="LIGSdir", help = "Directory with the docked compounds (This must be in PDB format)",required=True)
-    parser.add_argument('--target_pdb', dest="target_pdb", help = "Target PDB",required=True)
-    parser.add_argument('-o', dest="outname", help = "Prefix to save the COMPLEXES which will be used as input "
+    requiredArguments = parser.add_argument_group('required arguments')
+    requiredArguments.add_argument('--LIGSdir', dest="LIGSdir", help = "Directory with the docked compounds (This must be in PDB format)",required=True)
+    requiredArguments.add_argument('--target_pdb', dest="target_pdb", help = "Target PDB",required=True)
+    requiredArguments.add_argument('-o', dest="outname", help = "Prefix to save the COMPLEXES which will be used as input "
                                                      "for the PELE simulation"
                         ,required=True)
     parser.add_argument('--HBlist',dest='HBlist',help='Generate a list of all Hydrogen Bonds of the complex',action='store_true',default=False)
@@ -21,6 +22,7 @@ if __name__ == '__main__':
     parser.add_argument('--sdf_out',dest="sdf_out",help="Output sdf file with the molecules fullfiling the Glide feature"
                                                         " filter"
                        ,default=None)
+    requiredArguments.add_argument('--partition', dest='partition', help='MN5 partition either gpp or acc', required=True)
 
     args = parser.parse_args()
 
@@ -46,6 +48,13 @@ if __name__ == '__main__':
     else:
         sdf_out = args.sdf_out
     HBlist = args.HBlist
+    partition = args.partition
+    if partition == 'gpp':
+        qos = 'gp'
+    elif partition == 'acc':
+        qos = 'acc'
+    else:
+        raise ValueError('Partition must be either gpp or acc')
 
     cmd = 'python scripts/prep_files.py --LIGSdir %s --target_pdb %s -o %s' % (LIGSdir, target_pdb, complexname)
     if HBlist:
@@ -66,7 +75,7 @@ if __name__ == '__main__':
                 '#SBATCH --output=prepligs.out\n'
                 '#SBATCH --error=prepligs.err\n'
                 '#SBATCH --ntasks=1\n'
-                '#SBATCH --qos=gp_debug'
+                '#SBATCH --qos=%s_debug'
                 '#SBATCH --time=01:00:00\n'
                 '\n'
                 'module load anaconda\n'
@@ -76,7 +85,7 @@ if __name__ == '__main__':
                 '\n'
                 'eval \"$(conda shell.bash hook)\"\n'
                 'source activate /gpfs/projects/bsc72/conda_envs/PELE_ConStraParl\n'
-                '%s' % cmd)
+                '%s' % (qos, cmd))
     
     os.system('sbatch -A bsc72 prepligs.sh')
     os.system('rm prepligs.*')

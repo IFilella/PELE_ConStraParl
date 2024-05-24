@@ -4,16 +4,18 @@ import os
 import subprocess
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ='')
-    parser.add_argument('--LIGSdir', dest="LIGSdir", help = "Directory with the docked compounds",required=True)
-    parser.add_argument('-o', dest="outname", help = "",required=True)
-    parser.add_argument('-n', dest="n", help = "Number of processors",required=True)
+    parser = argparse.ArgumentParser(description ='This script creates the execution files needed for each ligand to complete the PELE simulation and puts them into a new runs directory.')
+    requiredArguments = parser.add_argument_group('required arguments')
+    requiredArguments.add_argument('--LIGSdir', dest="LIGSdir", help = "Directory with the docked compounds",required=True)
+    requiredArguments.add_argument('-o', dest="outname", help = "",required=True)
+    requiredArguments.add_argument('-n', dest="n", help = "Number of processors",required=True)
     parser.add_argument('--center', dest="center", help = "PELE box center", nargs='+', default=[None,None,None])
     parser.add_argument('--HBconsts', dest="HBconsts", help = "HB consts in the format C-RES000-AA C-RES000-AA ..."
                         "Looks for HydrogenBonds with the specified atoms", default=None, nargs='+')
     parser.add_argument('--truncated',dest='truncated',help='',action='store_true',default=False)
     parser.add_argument('--strain',dest='strain',help='Create an extra batch_2 file to get the minimal energy of each ligand with PELE', action='store_true',default=False)
-    parser.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True)
+    requiredArguments.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True)
+    requiredArguments.add_argument('--partition', dest='partition', help='MN5 partition either gpp or acc', required=True)
     args = parser.parse_args()
 
     #Parse inputs
@@ -31,6 +33,8 @@ if __name__ == '__main__':
     truncated = args.truncated
     strain = args.strain
     simulation = args.simulation
+    if partition != 'gpp' and partition!= 'acc':
+        raise ValueError('Partition must be either gpp or acc')
 
     compounds = glob.glob('%s/*_prep.pdb'%(ligsdir))
     compounds = [os.path.basename(compound).split('_prep.pdb')[0] for compound in compounds]
@@ -55,7 +59,7 @@ if __name__ == '__main__':
         batchfile3 = open('%s/runs/%s_batch_3.sh'%(current_dir, outname),'w')
     for i,compound in enumerate(compounds):
         print('%d %s'%(i+1,compound))
-        cmd = 'python scripts/generate_files.py --LIGSdir %s -o %s --compound %s -n %s --simulation %s'%(ligsdir,outname,compound,n, simulation)
+        cmd = 'python scripts/generate_files.py --LIGSdir %s -o %s --compound %s -n %s --simulation %s --partition %s'%(ligsdir,outname,compound,n, simulation, partition)
 
         if center != [None,None,None]:
             cmd += ' --center %s %s %s'%(center[0],center[1],center[2])
