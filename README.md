@@ -61,3 +61,6 @@ In addition to regular PELE refinement simulations starting from docked ligands,
 
 8) `batch_3.sh` <br>
    **If strain correction is enabled, this script will apply it to all binding free energies of the rescoring simulation and the resulting PELE BFE** <br>
+9) `pele_analysis.py` <br>
+  **This script generates a CSV file containing PELE BFE-related parameters for each ligand. It also retrieves a representative pose of the simlated ligand (the accepted PELE step with the lowest binding energy) with the original connectivity.** <br>
+(Optional) If a CSV file with docking parameters is provided, it will include additional metrics in the final CSV file.
