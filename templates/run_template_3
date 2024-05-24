@@ -1,0 +1,19 @@
+#!/bin/bash
+#SBATCH --job-name=1_$OUTNAME_$COMPOUND
+#SBATCH --output=mpi_1_$OUTNAME_$COMPOUND.out
+#SBATCH --error=mpi_1_$OUTNAME_$COMPOUND.err
+#SBATCH --ntasks=1
+#SBATCH --time=00-2:00:00
+#SBATCH --qos=gp_debug
+
+module purge
+module load anaconda
+module load intel mkl impi cmake
+module load transfer
+module load bsc
+
+eval "$(conda shell.bash hook)"
+source activate PELE_ConStraParl
+
+python $CURRENT/scripts/disc.py -d $CURRENT/results/$OUTNAME/$COMPOUND_min/output/ -c 4
+python $CURRENT/scripts/corrector.py -d $CURRENT/results/$OUTNAME/$COMPOUND -lf $CURRENT/results/$OUTNAME/$COMPOUND_min --skip_strain_per_cluster
