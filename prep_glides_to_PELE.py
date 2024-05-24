@@ -1,13 +1,6 @@
 from prody import *
-import glob
 import os
 import argparse
-from MolecularAnalysis.analysis import sts
-from MolecularAnalysis.moldb import MolDB
-import mdtraj as md
-import numpy as np
-import biotite.structure.io.pdb as pdb
-import biotite.structure.hbond as hbonds
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description ='Given a directory with multiple compounds (LIGSdir) docked to a '
