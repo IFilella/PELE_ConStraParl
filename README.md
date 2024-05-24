@@ -25,13 +25,13 @@ In addition to regular PELE refinement simulations starting from docked ligands,
   - **Prepared target protein (in PDB).**
   - (optional) Output table of the docking to filter ligands by properties in .csv format.
  
-1) `prep_glides_to_PELE.py`
-   **This script generates a COMPLEXES directory containing PDBs with the target and the ligands prepared for PELE.**
-   (optional) It can create an HBlist directory containing target and target-ligand hydrogen bond interactions for each ligand.
+1) `prep_glides_to_PELE.py`<br>
+   **This script generates a COMPLEXES directory containing PDBs with the target and the ligands prepared for PELE.** <br>
+   (optional) It can create an HBlist directory containing target and target-ligand hydrogen bond interactions for each ligand. <br>
    (optional) It can produce an SDF file containing ligands that meet the specified property filters (requires the output table).
 
-2) `generate_batch.py`
-   **This script creates the execution files needed for each ligand to complete the PELE simulation and puts them into a new runs directory.**
+3) `generate_batch.py`<br>
+   **This script creates the execution files needed for each ligand to complete the PELE simulation and puts them into a new runs directory. **<br>
    - runs_0_ligandX: SLURM script generating the subdirectory for the PELE simulations of ligandX.
    - batch_0: Batch file to execute all run_0_ligandX scripts in parallel.
    - runs_1_ligandX: SLURM script executing the PELE rescoring simulation of ligandX.
@@ -43,21 +43,21 @@ In addition to regular PELE refinement simulations starting from docked ligands,
    - runs: Directory where all run and batch files will be stored.
    - results: Directory where all simulation output subdirectories and PELE configuration files will be stored.
   
-3) `batch_0.sh`
-   **This script generates the PELE configuration file (yaml PELE conf files) and the PELE simulation subdirectory within the results directory for each ligand.**
+4) `batch_0.sh`<br>
+   **This script generates the PELE configuration file (yaml PELE conf files) and the PELE simulation subdirectory within the results directory for each ligand.** <br>
    It initiates PELE simulations subdirectories and halts PELE simulation.
 
-4) `modify_conf_runs.py`
-   **This script modifies the PELE configuration file (yaml PELE conf files) to include possible constraints (optional) and retrieve ligand internal energy for strain energy correction (optional) for each ligand.**
+5) `modify_conf_runs.py` <br>
+   **This script modifies the PELE configuration file (yaml PELE conf files) to include possible constraints (optional) and retrieve ligand internal energy for strain energy correction (optional) for each ligand.** <br>
    Adds atom-atom constraints to pele.conf based on specified HB constraints. You can add more than one constraint and only the ones found in each ligand would by applied.
    If strain correction is enabled, it incorporates the internal energy of the ligand into the report.
 
-5) `batch_1.sh`
-   **This script will start all PELE rescoring simulations**
+6) `batch_1.sh` <br>
+   **This script will start all PELE rescoring simulations** <br>
 
-6) `batch_2.sh`
-   **If strain correction is enabled, this script will run short PELE simulations, one for each compound (to get its minimal energy)**
+7) `batch_2.sh` <br>
+   **If strain correction is enabled, this script will run short PELE simulations, one for each compound (to get its minimal energy)** <br>
    This script can be run simultaneously with batch_1.sh script!
 
-8) `batch_3.sh`
-   **If strain correction is enabled, this script will apply it to all binding free energies of the rescoring simulation and the resulting PELE BFE**
+8) `batch_3.sh` <br>
+   **If strain correction is enabled, this script will apply it to all binding free energies of the rescoring simulation and the resulting PELE BFE** <br>
