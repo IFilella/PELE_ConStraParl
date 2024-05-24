@@ -11,9 +11,10 @@ from rdkit import Chem
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description ='')
-    parser.add_argument('--RESdir', dest="RESdir", help = "All PELE results directory", required=True)
-    parser.add_argument('--LIGSdir',dest="LIGSdir",help = 'Original directory with Ligands',required=True)
-    parser.add_argument('-o', dest="outname", help = "Outname",required=True)
+    requiredArguments = parser.add_argument_group('required arguments')
+    requiredArguments.add_argument('--RESdir', dest="RESdir", help = "All PELE results directory", required=True)
+    requiredArguments.add_argument('--LIGSdir',dest="LIGSdir",help = 'Original directory with Ligands',required=True)
+    requiredArguments.add_argument('-o', dest="outname", help = "Outname",required=True)
     parser.add_argument('--glide',dest='glide',help='Glide docking csv file', default=None)
     parser.add_argument('--PELEmetric',dest='metric',help='Final PELE metric',default='all_BFE')
     parser.add_argument('--charge',dest='charge',help='if added compute the net charge of each molecule (only works if glide.csv with SMILES is provided)', default=False,action='store_true')
