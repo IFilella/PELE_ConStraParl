@@ -57,7 +57,7 @@ In addition to regular PELE refinement simulations starting from docked ligands,
 
 7) `batch_2.sh` <br>
    **If strain correction is enabled, this script will run short PELE simulations, one for each compound (to get its minimal energy)** <br>
-   <u>This script can be run simultaneously with batch_1.sh script!</u>
+   <ins>This script can be run simultaneously with batch_1.sh script!</ins>
 
 8) `batch_3.sh` <br>
    **If strain correction is enabled, this script will apply it to all binding free energies of the rescoring simulation and the resulting PELE BFE** <br>
