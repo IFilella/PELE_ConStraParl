@@ -1,4 +1,3 @@
-from prody import *
 import os
 import argparse
 

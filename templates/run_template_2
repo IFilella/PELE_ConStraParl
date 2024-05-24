@@ -4,7 +4,7 @@
 #SBATCH --error=mpi_2_$OUTNAME_$COMPOUND.err
 #SBATCH --ntasks=1
 #SBATCH --time=00-2:00:00
-#SBATCH --qos=gp_debug
+#SBATCH --qos=gp_bscls
 
 module purge
 module load anaconda
