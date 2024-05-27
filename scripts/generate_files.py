@@ -34,6 +34,7 @@ if __name__ == '__main__':
         raise ValueError('If HBanalysis set as true then you need at least one HBconst')
     simulation = args.simulation
     strain = args.strain
+    partition = args.partition
     if partition == 'gpp':
         qos = 'gp'
     elif partition == 'acc':

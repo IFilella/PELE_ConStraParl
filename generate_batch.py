@@ -33,6 +33,7 @@ if __name__ == '__main__':
     truncated = args.truncated
     strain = args.strain
     simulation = args.simulation
+    partition = args.partition
     if partition != 'gpp' and partition!= 'acc':
         raise ValueError('Partition must be either gpp or acc')
 
