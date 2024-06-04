@@ -13,7 +13,7 @@ if __name__ == '__main__':
     parser.add_argument('--truncated',dest='truncated',help='',action='store_true',default=False)
     parser.add_argument('--strain',dest='strain',help='', action='store_true',default=False)
     parser.add_argument('--HBanalysis',dest='HBanalysis',help='', action='store_true',default=False)
-    requiredArguments.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True) 
+    #requiredArguments.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True) 
     requiredArguments.add_argument('--partition', dest='partition', help='MN5 partition either gpp or acc', required=True)
     args = parser.parse_args()
 
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     HBanalysis = args.HBanalysis
     if HBanalysis and not HBconsts:
         raise ValueError('If HBanalysis set as true then you need at least one HBconst')
-    simulation = args.simulation
+    #simulation = args.simulation
     strain = args.strain
     partition = args.partition
     if partition == 'gpp':
@@ -145,16 +145,14 @@ if __name__ == '__main__':
 
     os.system('chmod +x %s/runs/%s/run_%s_0'%(current_dir, outname,compound))
     os.system('chmod +x %s/runs/%s/run_%s_1'%(current_dir, outname,compound))
-
-    #if truncated:
-    #    yamlinp = open('%s/templates/yaml_template_trunc.yaml'%current_dir,'r')
-   
-    if simulation == 'rescoring':
-        yamlinp = open('%s/templates/yaml_template.yaml'%current_dir,'r')
-    elif simulation == 'expanded':
-        yamlinp = open('%s/templates/yaml_template_expanded.yaml'%current_dir,'r')
-    else:
-        raise ValueError('Indicate the simulation type (rescoring or expanded)')
+ 
+    #if simulation == 'rescoring':
+    #    yamlinp = open('%s/templates/yaml_template.yaml'%current_dir,'r')
+    #elif simulation == 'expanded':
+    #    yamlinp = open('%s/templates/yaml_template_expanded.yaml'%current_dir,'r')
+    #else:
+    #    raise ValueError('Indicate the simulation type (rescoring or expanded)')
+    yamlinp = open('%s/templates/yaml_template.yaml'%current_dir,'r')
     yamlout = open('%s/results/%s/%s.yaml'%(current_dir,outname,compound),'w')
 
     #Create a yaml file
