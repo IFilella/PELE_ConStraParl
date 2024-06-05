@@ -163,7 +163,7 @@ if __name__ == '__main__':
         if '$PREFIX' in line:
             line = line.replace('$PREFIX', prefix)
         if '$OUTDIR':
-            line = line.replace('$OUTDIR', outdir[:-1])
+            line = line.replace('$OUTDIR', outdir)
         if '$COMPOUND' in line:
             line = line.replace('$COMPOUND', compound)
         if '$PROCESSORS':
