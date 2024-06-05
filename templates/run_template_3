@@ -16,4 +16,4 @@ eval "$(conda shell.bash hook)"
 source activate /gpfs/projects/bsc72/conda_envs/PELE_ConStraParl
 
 python $CURRENT/scripts/disc.py -d $CURRENT/results/$OUTNAME/$COMPOUND_min/output/ -c 4
-python $CURRENT/scripts/corrector.py -d $CURRENT/results/$OUTNAME/$COMPOUND -lf $CURRENT/results/$OUTNAME/$COMPOUND_min --skip_strain_per_cluster
+python $CURRENT/scripts/corrector.py -d $CURRENT/results/$OUTNAME/$COMPOUND/4_adaptive_pele_simulation/complex_2 -lf $CURRENT/results/$OUTNAME/$COMPOUND_min --skip_strain_per_cluster
