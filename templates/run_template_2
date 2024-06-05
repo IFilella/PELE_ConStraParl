@@ -15,4 +15,4 @@ module load bsc
 eval "$(conda shell.bash hook)"
 source activate /gpfs/projects/bsc72/conda_envs/PELE_ConStraParl
 
-python $REPO/scripts/ligand_minimization.py -f $LIGSDIR/$COMPOUND_prep.pdb -d $OUTDIR/results/$COMPOUND/4_adaptive_pele_simulation/complex_2 -r LIG -lf $OUTDIR/results/$COMPOUND_min
+python $REPO/scripts/ligand_minimization.py -f $OUTDIR/results/$COMPOUND/2_pele_pdb_preprocessor/complexes/complex_2_ligand.pdb -d $OUTDIR/results/$COMPOUND/4_adaptive_pele_simulation/complex_2 -r LIG -lf $OUTDIR/results/$COMPOUND_min
