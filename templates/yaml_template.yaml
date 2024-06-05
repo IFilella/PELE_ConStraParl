@@ -1,7 +1,7 @@
-complex_data: $CURRENT/$COMPLEXESDIR/$OUTNAME_$COMPOUND.pdb
+complex_data: $COMPLEXESDIR/$PREFIX_$COMPOUND.pdb
 complex_ligand_selection: L:900
 cpus: $PROCESSORS
-name: $CURRENT/results/$OUTNAME/$COMPOUND
+name: $OUTDIR/results/$COMPOUND
 verbosity: debug
 pipeline:
 - block: topology_extractor
@@ -20,9 +20,13 @@ pipeline:
     pele_steering_update_frequency: 0
     pele_temperature: 1000
     pele_anm_frequency: 0
-    pele_anm_minimizer_non_bonding_list_update_each_min_step: False
+    #pele_anm_frequency: 4
+    pele_anm_minimizer_non_bonding_list_updated_each_min_step: False
+    #pele_anm_minimizer_non_bonding_list_updated_each_min_step: True
     pele_minimizer_rmstol: 0.2
+    #pele_minimizer_rmstol: 1.0
     pele_minimizer_maximum_newton_iterations: 0
+    #pele_minimizer_maximum_newton_iterations: 1
     pele_perturbation_box_radius: 6
     pele_perturbation_steric_trials: 500
     pele_perturbation_level: 1

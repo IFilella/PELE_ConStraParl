@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=3_$OUTNAME_$COMPOUND
-#SBATCH --output=mpi_3_$OUTNAME_$COMPOUND.out
-#SBATCH --error=mpi_3_$OUTNAME_$COMPOUND.err
+#SBATCH --job-name=3_$PREFIX_$COMPOUND
+#SBATCH --output=mpi_3_$PREFIX_$COMPOUND.out
+#SBATCH --error=mpi_3_$PREFIX_$COMPOUND.err
 #SBATCH --ntasks=1
 #SBATCH --time=00-2:00:00
 #SBATCH --qos=$QOS_bscls
@@ -15,5 +15,5 @@ module load bsc
 eval "$(conda shell.bash hook)"
 source activate /gpfs/projects/bsc72/conda_envs/PELE_ConStraParl
 
-python $CURRENT/scripts/disc.py -d $CURRENT/results/$OUTNAME/$COMPOUND_min/output/ -c 4
-python $CURRENT/scripts/corrector.py -d $CURRENT/results/$OUTNAME/$COMPOUND/4_adaptive_pele_simulation/complex_2 -lf $CURRENT/results/$OUTNAME/$COMPOUND_min --skip_strain_per_cluster
+python $REPO/scripts/disc.py -d $OUTDIR/results/$COMPOUND_min/output/ -c 4
+python $REPO/scripts/corrector.py -d $OUTDIR/results/$COMPOUND/4_adaptive_pele_simulation/complex_2 -lf $OUTDIR/results/$COMPOUND_min --skip_strain_per_cluster

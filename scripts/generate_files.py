@@ -21,9 +21,14 @@ if __name__ == '__main__':
                                     dest="LIGSdir", 
                                     help = "Directory with the docked compounds", 
                                     required=True)
-    requiredArguments.add_argument('-o',
-                                    dest="outname",
-                                    help = "",required=True)
+    requiredArguments.add_argument('--pref',
+                                    dest="prefix",
+                                    help = "",
+                                    required=True)
+    requiredArguments.add_argument('--outdir',
+                                    dest="outdir",
+                                    help = "",
+                                    required=True)
     requiredArguments.add_argument('--compound',
                                     dest="compound",
                                     help = "", 
@@ -48,7 +53,6 @@ if __name__ == '__main__':
                         help='',
                         action='store_true', 
                         default=False)
-    #requiredArguments.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True) 
     requiredArguments.add_argument('--partition',
                                     dest='partition',
                                     help='MN5 partition either gpp or acc',
@@ -57,16 +61,15 @@ if __name__ == '__main__':
 
     #Parse inputs
     ligsdir = args.LIGSdir
-    complexesdir = '/'.join(os.path.dirname(ligsdir).split('/')[0:-1]) + '/COMPLEXES'
-    ligsdir = '/'.join(os.path.dirname(ligsdir).split('/'))
-    outname = args.outname
+    prefix = args.prefix
+    outdir = args.outdir
+    complexesdir = outdir + '/COMPLEXES'
     compound = args.compound
     n = args.n
     HBconsts = args.HBconsts
     # center = args.center
     # if len(center) != 3:
     #     raise ValueError('If given, the center must be 3D')
-    #simulation = args.simulation
     strain = args.strain
     partition = args.partition
     if partition == 'gpp':
@@ -76,95 +79,97 @@ if __name__ == '__main__':
     else:
         raise ValueError('Partition must be either gpp or acc')
 
-    current_dir = os.getcwd()
+    repodir = os.getcwd()
 
-    runinp1 = open('%s/templates/run_template_1'%current_dir,'r')
-    runout1 = open('%s/runs/%s/run_%s_1'%(current_dir, outname,compound),'w')
+    runinp1 = open('%s/templates/run_template_1' % repodir, 'r')
+    runout1 = open('%s/runs/run_%s_1' % (outdir, compound), 'w')
 
     #Create specific run_1 using run_template_1 as template
     for line in runinp1:
         if '$LIGSDIR' in line:
             line = line.replace('$LIGSDIR',ligsdir)
-        if '$OUTNAME' in line:
-            line = line.replace('$OUTNAME',outname)
+        if '$PREFIX' in line:
+            line = line.replace('$PREFIX', prefix)
         if '$COMPOUND' in line:
             line = line.replace('$COMPOUND',compound)
         if '$PROCESSORS' in line:
             line = line.replace('$PROCESSORS',n)
-        if '$CURRENT':
-            line = line.replace('$CURRENT',current_dir)
+        if '$OUTDIR':
+            line = line.replace('$OUTDIR', outdir)
         if '$QOS' in line:
-            line = line.replace('$QOS',qos)
+            line = line.replace('$QOS', qos)
+        if '$REPO' in line:
+            line = line.replace('$REPO', repodir)
         runout1.write(line)
 
-    os.system('chmod +x %s/runs/%s/run_%s_1'%(current_dir, outname, compound))
+    os.system('chmod +x %s/runs/run_%s_1'%(outdir, compound))
     runinp1.close()
     runout1.close()
 
     if strain:
-        runinp2 = open('%s/templates/run_template_2'%current_dir,'r')
-        runout2 = open('%s/runs/%s/run_%s_2'%(current_dir, outname, compound),'w')
+        runinp2 = open('%s/templates/run_template_2' % repodir, 'r')
+        runout2 = open('%s/runs/run_%s_2'%(outdir, compound),'w')
 
         for line in runinp2:
             if '$LIGSDIR' in line:
                 line = line.replace('$LIGSDIR',ligsdir)
-            if '$OUTNAME' in line:
-                line = line.replace('$OUTNAME',outname)
+            if '$PREFIX' in line:
+                line = line.replace('$PREFIX', prefix)
             if '$COMPOUND' in line:
-                line = line.replace('$COMPOUND',compound)
-            if '$CURRENT':
-                line = line.replace('$CURRENT',current_dir)
+                line = line.replace('$COMPOUND', compound)
+            if '$OUTDIR':
+                line = line.replace('$OUTDIR', outdir)
             if '$QOS' in line:
-                line = line.replace('$QOS',qos)
+                line = line.replace('$QOS', qos)
+            if '$REPO' in line:
+                line = line.replace('$REPO', repodir)
             runout2.write(line)
     
-        os.system('chmod +x %s/runs/%s/run_%s_2'%(current_dir, outname,compound))
+        os.system('chmod +x %s/runs/run_%s_2'%(outdir, compound))
         runinp2.close()
         runout2.close()
 
-        runinp3 = open('%s/templates/run_template_3'%current_dir,'r')
-        runout3 = open('%s/runs/%s/run_%s_3'%(current_dir, outname, compound),'w')
+        runinp3 = open('%s/templates/run_template_3' % repodir,'r')
+        runout3 = open('%s/runs/run_%s_3' % (outdir, compound),'w')
  
         for line in runinp3:
             if '$LIGSDIR' in line:
-                line = line.replace('$LIGSDIR',ligsdir)
-            if '$OUTNAME' in line:
-                line = line.replace('$OUTNAME',outname)
+                line = line.replace('$LIGSDIR', ligsdir)
+            if '$PREFIX' in line:
+                line = line.replace('$OUTNAME', prefix)
+            if '$OUTDIR':
+                line = line.replace('$OUTDIR', outdir)
             if '$COMPOUND' in line:
-                line = line.replace('$COMPOUND',compound)
+                line = line.replace('$COMPOUND', compound)
             if '$PROCESSORS' in line:
-                line = line.replace('$PROCESSORS',n)
-            if '$CURRENT':
-                line = line.replace('$CURRENT',current_dir)
+                line = line.replace('$PROCESSORS', n)
+            if '$REPO':
+                line = line.replace('$REPO', repodir)
             if '$QOS' in line:
-                line = line.replace('$QOS',qos)
+                line = line.replace('$QOS', qos)
             runout3.write(line)
     
-        os.system('chmod +x %s/runs/%s/run_%s_3'%(current_dir, outname,compound))
+        os.system('chmod +x %s/runs/run_%s_3'%(outdir, compound))
         runinp3.close()
         runout3.close()
  
-    #if simulation == 'rescoring':
-    #    yamlinp = open('%s/templates/yaml_template.yaml'%current_dir,'r')
-    #elif simulation == 'expanded':
-    #    yamlinp = open('%s/templates/yaml_template_expanded.yaml'%current_dir,'r')
-    #else:
-    #    raise ValueError('Indicate the simulation type (rescoring or expanded)')
-    yamlinp = open('%s/templates/yaml_template.yaml'%current_dir,'r')
-    yamlout = open('%s/results/%s/%s.yaml'%(current_dir,outname,compound),'w')
+    yamlinp = open('%s/templates/yaml_template.yaml' % repodir,'r')
+    yamlout = open('%s/results/%s.yaml' % (outdir, compound),'w')
 
     #Create a yaml file
     for line in yamlinp:
         if '$COMPLEXESDIR' in line:
-            line = line.replace('$COMPLEXESDIR',complexesdir)
-        if '$OUTNAME' in line:
-            line = line.replace('$OUTNAME',outname)
+            line = line.replace('$COMPLEXESDIR', complexesdir)
+        if '$PREFIX' in line:
+            line = line.replace('$PREFIX', prefix)
+        if '$OUTDIR':
+            line = line.replace('$OUTDIR', outdir[:-1])
         if '$COMPOUND' in line:
-            line = line.replace('$COMPOUND',compound)
+            line = line.replace('$COMPOUND', compound)
         if '$PROCESSORS':
-            line = line.replace('$PROCESSORS',n)
-        if '$CURRENT':
-            line = line.replace('$CURRENT',current_dir)
+            line = line.replace('$PROCESSORS', n)
+        if '$REPO':
+            line = line.replace('$REPO', repodir)
         if 'adaptive_epochs' in line:
             if strain or HBconsts:
                 line += '    pele_tasks_metrics:\n'

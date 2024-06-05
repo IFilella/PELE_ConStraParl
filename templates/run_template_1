@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=1_$OUTNAME_$COMPOUND
-#SBATCH --output=mpi_1_$OUTNAME_$COMPOUND.out
-#SBATCH --error=mpi_1_$OUTNAME_$COMPOUND.err
+#SBATCH --job-name=1_$PREFIX_$COMPOUND
+#SBATCH --output=mpi_1_$PREFIX_$COMPOUND.out
+#SBATCH --error=mpi_1_$PREFIX_$COMPOUND.err
 #SBATCH --ntasks=$PROCESSORS
 #SBATCH --time=00-8:00:00
 #SBATCH --qos=$QOS_bscls
@@ -20,6 +20,6 @@ export USESRUN=1
 eval "$(conda shell.bash hook)"
 source activate /gpfs/projects/bsc72/conda_envs/nbdsuite/0.5.0
 
-python -u -m nbdsuite.main $CURRENT/results/$OUTNAME/$COMPOUND.yaml
+python -u -m nbdsuite.main $OUTDIR/results/$COMPOUND.yaml
 
-python $CURRENT/scripts/recover_connectivity.py $CURRENT/$LIGSDIR/$COMPOUND_prep.pdb --pdb_target $CURRENT/results/$OUTNAME/$COMPOUND/4_adaptive_pele_simulation/complex_2/output/topologies/topology_0.pdb -lc L -lt L
+python $REPO/scripts/recover_connectivity.py $LIGSDIR/$COMPOUND_prep.pdb --pdb_target $OUTDIR/results/$COMPOUND/4_adaptive_pele_simulation/complex_2/output/topologies/topology_0.pdb -lc L -lt L

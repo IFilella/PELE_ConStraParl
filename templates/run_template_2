@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=2_$OUTNAME_$COMPOUND
-#SBATCH --output=mpi_2_$OUTNAME_$COMPOUND.out
-#SBATCH --error=mpi_2_$OUTNAME_$COMPOUND.err
+#SBATCH --job-name=2_$PREFIX_$COMPOUND
+#SBATCH --output=mpi_2_$PREFIX_$COMPOUND.out
+#SBATCH --error=mpi_2_$PREFIX_$COMPOUND.err
 #SBATCH --ntasks=1
 #SBATCH --time=00-8:00:00
 #SBATCH --qos=$QOS_bscls
@@ -15,4 +15,4 @@ module load bsc
 eval "$(conda shell.bash hook)"
 source activate /gpfs/projects/bsc72/conda_envs/PELE_ConStraParl
 
-python $CURRENT/scripts/ligand_minimization.py -f $CURRENT/$LIGSDIR/$COMPOUND_prep.pdb -d $CURRENT/results/$OUTNAME/$COMPOUND -r LIG -lf $CURRENT/results/$OUTNAME/$COMPOUND_min
+python $REPO/scripts/ligand_minimization.py -f $LIGSDIR/$COMPOUND_prep.pdb -d $OUTDIR/results/$COMPOUND/4_adaptive_pele_simulation/complex_2 -r LIG -lf $OUTDIR/results/$COMPOUND_min
