@@ -1,20 +1,58 @@
 import argparse
 import os
 
+def to_PELE_selection_format(chain, residue, atom):
+    if len(atom) == 1:
+        _atom = '_'+atom+'__'
+    elif len(atom) == 2:
+        _atom = '_'+atom+'_'
+    elif len(atom) == 3:
+        _atom = '_'+atom
+    elif len(atom) == 4:
+        _atom = atom
+    _residue = residue[3:]
+    return '%s:%s:%s' % (chain, _residue, _atom)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description ='')
     requiredArguments = parser.add_argument_group('required arguments')
-    requiredArguments.add_argument('--LIGSdir', dest="LIGSdir", help = "Directory with the docked compounds",required=True)
-    requiredArguments.add_argument('-o', dest="outname", help = "",required=True)
-    requiredArguments.add_argument('--compound', dest="compound", help = "",required=True)
-    requiredArguments.add_argument('-n', dest="n", help = "Number of processors",required=True)
-    parser.add_argument('--HBconsts', dest="HBconsts", help = "HB constrain", nargs='+', action='append', default=None)
-    parser.add_argument('--center', dest="center", help = "", nargs='+', default=[None,None,None])
-    parser.add_argument('--truncated',dest='truncated',help='',action='store_true',default=False)
-    parser.add_argument('--strain',dest='strain',help='', action='store_true',default=False)
-    parser.add_argument('--HBanalysis',dest='HBanalysis',help='', action='store_true',default=False)
+    requiredArguments.add_argument('--LIGSdir',
+                                    dest="LIGSdir", 
+                                    help = "Directory with the docked compounds", 
+                                    required=True)
+    requiredArguments.add_argument('-o',
+                                    dest="outname",
+                                    help = "",required=True)
+    requiredArguments.add_argument('--compound',
+                                    dest="compound",
+                                    help = "", 
+                                    required=True)
+    requiredArguments.add_argument('-n',
+                                    dest="n",
+                                    help = "Number of processors", 
+                                    required=True)
+    parser.add_argument('--HBconsts',
+                        dest="HBconsts",
+                        help = "HB constrain",
+                        nargs='+',
+                        action='append',
+                        default=None)
+    # parser.add_argument('--center',
+    #                     dest="center",
+    #                     help = "",
+    #                     nargs='+',
+    #                     default=[None,None,None])
+    parser.add_argument('--strain',
+                        dest='strain',
+                        help='',
+                        action='store_true', 
+                        default=False)
     #requiredArguments.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True) 
-    requiredArguments.add_argument('--partition', dest='partition', help='MN5 partition either gpp or acc', required=True)
+    requiredArguments.add_argument('--partition',
+                                    dest='partition',
+                                    help='MN5 partition either gpp or acc',
+                                    required=True)
     args = parser.parse_args()
 
     #Parse inputs
@@ -25,13 +63,9 @@ if __name__ == '__main__':
     compound = args.compound
     n = args.n
     HBconsts = args.HBconsts
-    center = args.center
-    if len(center) != 3:
-        raise ValueError('If given, the center must be 3D')
-    truncated = args.truncated
-    HBanalysis = args.HBanalysis
-    if HBanalysis and not HBconsts:
-        raise ValueError('If HBanalysis set as true then you need at least one HBconst')
+    # center = args.center
+    # if len(center) != 3:
+    #     raise ValueError('If given, the center must be 3D')
     #simulation = args.simulation
     strain = args.strain
     partition = args.partition
@@ -44,33 +78,8 @@ if __name__ == '__main__':
 
     current_dir = os.getcwd()
 
-    if truncated:
-        runinp0 = open('%s/templates/run_template_0_trunc'%current_dir,'r')
-    else:
-        runinp0 = open('%s/templates/run_template_0'%current_dir,'r')
-
-    runout0 = open('%s/runs/%s/run_%s_0'%(current_dir,outname,compound),'w')
     runinp1 = open('%s/templates/run_template_1'%current_dir,'r')
     runout1 = open('%s/runs/%s/run_%s_1'%(current_dir, outname,compound),'w')
-
-    #Create specific run_0 using run_template_0 as template
-    for line in runinp0:
-        if '$LIGSDIR' in line:
-            line = line.replace('$LIGSDIR',ligsdir)
-        if '$OUTNAME' in line:
-            line = line.replace('$OUTNAME',outname)
-        if '$COMPOUND' in line:
-            line = line.replace('$COMPOUND',compound)
-        if '$PROCESSORS' in line:
-            line = line.replace('$PROCESSORS',n)
-        if '$CURRENT':
-            line = line.replace('$CURRENT',current_dir)
-        if '$QOS' in line:
-            line = line.replace('$QOS',qos)
-        runout0.write(line)
-
-    runinp0.close()
-    runout0.close()
 
     #Create specific run_1 using run_template_1 as template
     for line in runinp1:
@@ -88,6 +97,7 @@ if __name__ == '__main__':
             line = line.replace('$QOS',qos)
         runout1.write(line)
 
+    os.system('chmod +x %s/runs/%s/run_%s_1'%(current_dir, outname, compound))
     runinp1.close()
     runout1.close()
 
@@ -133,18 +143,6 @@ if __name__ == '__main__':
         os.system('chmod +x %s/runs/%s/run_%s_3'%(current_dir, outname,compound))
         runinp3.close()
         runout3.close()
-
-    if HBanalysis:
-        runout1 = open('%s/runs/%s/run_%s_1'%(current_dir,outname,compound),'a')
-        for const in HBconsts:
-            runout1.write('\n')
-            chain,residue,atom = const[0].split('-')
-            cmd = 'python /gpfs/projects/bsc72/COVID/COVID_VS_analysis/FilteringAndClustering.py %s/results/%s/%s/ -n %s --ie_col 5 --rmsd_col 7 -t output/topologies/conntopology_0.pdb -b 2.5 -g2 %s:%s:%s --minimum_g2_conditions 1 -o filtering_results_HB --generate_plots --hbonds_path hbonds.out'%(current_dir,outname,compound,n,chain,residue,atom)
-            runout1.write(cmd)
-            runout1.close()
-
-    os.system('chmod +x %s/runs/%s/run_%s_0'%(current_dir, outname,compound))
-    os.system('chmod +x %s/runs/%s/run_%s_1'%(current_dir, outname,compound))
  
     #if simulation == 'rescoring':
     #    yamlinp = open('%s/templates/yaml_template.yaml'%current_dir,'r')
@@ -167,21 +165,41 @@ if __name__ == '__main__':
             line = line.replace('$PROCESSORS',n)
         if '$CURRENT':
             line = line.replace('$CURRENT',current_dir)
+        if 'adaptive_epochs' in line:
+            if strain or HBconsts:
+                line += '    pele_tasks_metrics:\n'
+            if strain:
+                line += '      - type: internal_energy\n'
+                line += '        tag: InternalEnergy\n'
+                line += '        atomset_selection: L\n'
+            if HBconsts:
+                for i, const in enumerate(HBconsts): 
+                    chain0, residue0, atom0 = const[0].split('-')
+                    chain1, residue1, atom1 = const[1].split('-')
+                    sel0 = to_PELE_selection_format(chain0, residue0, atom0)
+                    sel1 = to_PELE_selection_format(chain1, residue1, atom1)
+                    line += '      - type: com_distance\n'
+                    line += '        tag: %s%s%s%s%s%s\n' % (chain1, residue1[3:], atom1, chain0, residue0[3:], atom0)
+                    line += '        selection_group_1: \"%s\"\n' % sel1
+                    line += '        selection_group_2: \"%s\"\n' % sel0
+                line += '    pele_harmonic_constraints:\n'
+                for i, const in enumerate(HBconsts):    
+                    chain0, residue0, atom0 = const[0].split('-')
+                    chain1, residue1, atom1 = const[1].split('-')
+                    sel0 = to_PELE_selection_format(chain0, residue0, atom0)
+                    sel1 = to_PELE_selection_format(chain1, residue1, atom1)
+                    line += '      - type: atom_atom\n'
+                    line += '        spring_constant: 5.0\n'
+                    line += '        equilibrium_distance: 2.7\n'
+                    line += '        atom_selection1: \"%s\"\n' % sel1
+                    line += '        atom_selection2: \"%s\"\n' % sel0  
         yamlout.write(line)
 
-    if HBconsts:
-        for i,const in enumerate(HBconsts):
-            chain0,residue0,atom0 = const[0].split('-')
-            chain1,residue1,atom1 = const[1].split('-')
-            if i == 0: yamlout.write('atom_dist:\n')
-            yamlout.write('  - \"%s:%s:%s\"\n'%(chain0,residue0[3:],atom0))
-            yamlout.write('  - \"%s:%s:%s\"\n'%(chain1,residue1[3:],atom1))
-
-    if center!=[None,None,None]:
-        yamlout.write('box_center:\n')
-        yamlout.write('  - %s\n'%center[0])
-        yamlout.write('  - %s\n'%center[1])
-        yamlout.write('  - %s\n'%center[2])
+    # if center!=[None,None,None]:
+    #     yamlout.write('box_center:\n')
+    #     yamlout.write('  - %s\n'%center[0])
+    #     yamlout.write('  - %s\n'%center[1])
+    #     yamlout.write('  - %s\n'%center[2])
 
     yamlinp.close()
     yamlout.close()
