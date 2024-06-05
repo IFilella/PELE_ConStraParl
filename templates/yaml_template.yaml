@@ -1,18 +1,37 @@
-pele_exec: "/gpfs/projects/bsc72/PELE++/mnv/1.8.1b1/bin/PELE_mpi"
-pele_data: "/gpfs/projects/bsc72/PELE++/mnv/1.8.1b1/Data"
-pele_documents: "/gpfs/projects/bsc72/PELE++/mnv/1.8.1b1/Documents"
-system: '$CURRENT/$COMPLEXESDIR/$OUTNAME_$COMPOUND.pdb'
-working_folder: "$CURRENT/results/$OUTNAME/$COMPOUND"
-rmsd_pdb: '$CURRENT/$COMPLEXESDIR/$OUTNAME_$COMPOUND.pdb'
-log: false
-chain: 'L'
-resname: 'LIG'
-adaptive_restart: false
-seed: 12345
-ca_constr: 1
+complex_data: $CURRENT/$COMPLEXESDIR/$OUTNAME_$COMPOUND.pdb
+complex_ligand_selection: L:900
 cpus: $PROCESSORS
-rescoring: true
-box_radius: 6
-traj: trajectory.xtc
-usesrun: true
-debug: true
+name: $CURRENT/results/$OUTNAME/$COMPOUND
+verbosity: debug
+pipeline:
+- block: topology_extractor
+- block: pele_pdb_preprocessor
+  options:
+    set_unique_pdb_atom_names: true
+    fix_side_chains: true
+- block: pele_parameterizer
+#- block: pele_energy_minimizer
+- block: adaptive_pele_simulation
+  options:
+    pele_steps: 12
+    adaptive_epochs: 20
+    pele_side_chain_prediction_frequency: 1
+    pele_perturbation_COM_constraint_constant: 0
+    pele_steering_update_frequency: 0
+    pele_temperature: 1000
+    pele_anm_frequency: 0
+    pele_anm_minimizer_non_bonding_list_update_each_min_step: False
+    pele_minimizer_rmstol: 0.2
+    pele_minimizer_maximum_newton_iterations: 0
+    pele_perturbation_box_radius: 6
+    pele_perturbation_steric_trials: 500
+    pele_perturbation_level: 1
+    #pele_rotation_scaling_factor: [0.05,0.1]
+    #pele_translation_range: [0.25,0.5]
+    adaptive_spawning_type: epsilon
+    adaptive_bias_column: 5
+    adaptive_epsilon: 0.2
+    adaptive_bias_condition: min
+    adaptive_threshold_distance: 8
+    adaptive_threshold_calculator_values: [1.75, 2.5, 4, 6]
+    adaptive_threshold_calculator_conditions: [1, 0.6, 0.4, 0.0]
