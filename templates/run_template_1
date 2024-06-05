@@ -6,19 +6,20 @@
 #SBATCH --time=00-8:00:00
 #SBATCH --qos=$QOS_bscls
 
-module purge
-module load anaconda
-module load intel mkl impi cmake
-module load transfer
-module load bsc
+ml intel/2023.2.0
+ml cmake/3.25.1
+ml impi/2021.10.0
+ml mkl/2023.2.0
+ml miniconda/24.1.2
+
+export PELE=/gpfs/projects/bsc72/PELE++/mnv/1.8.1b1
+export PELELIC=/gpfs/projects/bsc72/PELE++/license
+export SCHRODINGER=/gpfs/projects/bsc72/Programs/SCHRODINGER_ACADEMIC
+export USESRUN=1
 
 eval "$(conda shell.bash hook)"
-source activate /gpfs/projects/bsc72/conda_envs/platform
+source activate /gpfs/projects/bsc72/conda_envs/nbdsuite/0.5.0
 
-python -m pele_platform.main $CURRENT/results/$OUTNAME/$COMPOUND.yaml
+python -u -m nbdsuite.main $CURRENT/results/$OUTNAME/$COMPOUND.yaml
 
-#python $CURRENT/scripts/generate_results.py --workDIR $CURRENT/results/$OUTNAME/$COMPOUND
-
-python $CURRENT/scripts/recover_connectivity.py $CURRENT/$LIGSDIR/$COMPOUND_prep.pdb --pdb_target $CURRENT/results/$OUTNAME/$COMPOUND/output/topologies/topology_0.pdb -lc L -lt L
-
-#python /gpfs/projects/bsc72/COVID/COVID_VS_analysis/HBCounter.py $CURRENT/results/$OUTNAME/$COMPOUND/ -r report -n $PROCESSORS -t output/topologies/topology_0.pdb -o hbonds.out
+python $CURRENT/scripts/recover_connectivity.py $CURRENT/$LIGSDIR/$COMPOUND_prep.pdb --pdb_target $CURRENT/results/$OUTNAME/$COMPOUND/4_adaptive_pele_simulation/complex_2/output/topologies/topology_0.pdb -lc L -lt L
