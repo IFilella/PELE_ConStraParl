@@ -295,7 +295,7 @@ def corrector(input_folder,
 
                     line = line.split('    ')
                     column_current_energy = line.index('currentEnergy') + 1
-                    column_binding_energy = line.index('BindingEnergy') + 1
+                    column_binding_energy = line.index('bindingEnergy') + 1
                     column_internal_energy = line.index('InternalEnergy') + 1
 
                     #
@@ -809,27 +809,27 @@ def corrector(input_folder,
         """
 
         path_to_run = os.path.join(path_pl_simulation, 'run_analysis')
-        list_input_files = [x for x in os.listdir(os.path.join(path_pl_simulation,'input'))]
+        _path_pl_simulation = '/'.join(path_pl_simulation.split('/')[:-2])
+        list_input_files = [x for x in os.listdir(os.path.join(_path_pl_simulation,'2_pele_pdb_preprocessor/complexes'))]
+        if 'complex_2_system.pdb' in list_input_files:
+            list_input_files.remove('complex_2_system.pdb')
+        if 'complex_2_ligand.pdb' in list_input_files:
+            list_input_files.remove('complex_2_ligand.pdb')
 
-        if 'receptor.pdb' in list_input_files:
-            list_input_files.remove('receptor.pdb')
-        if 'ligand.pdb' in list_input_files:
-            list_input_files.remove('ligand.pdb')
-
-        topology_file = os.path.join(path_pl_simulation,'input',list_input_files[0])
-	#topology_file = os.path.join(path_pl_simulation,'output','topologies','topologies_0.pdb')
+        topology_file = os.path.join(_path_pl_simulation,'2_pele_pdb_preprocessor/complexes',list_input_files[0])
+        
         with open(path_to_run, 'w') as fileout:
 
             fileout.writelines(
                 '#!/bin/bash\n'
-                '#SBATCH --job-name=analysis\n'
-                '#SBATCH --output=analysis.out\n'
-                '#SBATCH --error=analysis.err\n'
+                '#SBATCH --job-name=analysis_strain\n'
+                '#SBATCH --output=analysis_strain.out\n'
+                '#SBATCH --error=analysis_strain.err\n'
                 '#SBATCH --ntasks=1\n'
                 '#SBATCH --qos=gp_debug\n'
                 '#SBATCH --time=00-00:30:00\n'
                 '\n'
-                'module purge'
+                'module purge\n'
                 'module load anaconda\n'
                 'module load intel mkl impi gcc cmake\n'
                 'module load transfer\n'
@@ -838,7 +838,10 @@ def corrector(input_folder,
                 'eval "$(conda shell.bash hook)"\n'
                 'conda activate /gpfs/projects/bsc72/conda_envs/platform\n'
                 '\n'
+                'sed -i \'s/bindingEnergy/Binding Energy/g\' ' + path_pl_simulation + '/output/*/mod_report_*\n'
                 'python script.py\n'
+                'sed -i \'s/Binding Energy/bindingEnergy/g\' ' + path_pl_simulation + '/output/*/mod_report_*\n'
+
             )
 
         with open(os.path.join(path_pl_simulation, 'script.py'), 'w') as fileout:
@@ -849,7 +852,7 @@ def corrector(input_folder,
                 'analysis = Analysis(resname="' + residue_name +
                 '", chain="L", simulation_output="output", be_column = ' + str(column_binding_energy) + ', report="' +
                 'mod_' + report_name + '", traj="trajectory.' + file_format + '",  topology = "' + topology_file + '", cpus=48)\n'
-                'analysis.generate(path="analysis", clustering_type="meanshift")\n'
+                'analysis.generate(path="analysis_strain", clustering_type="meanshift")\n'
             )
 
         return path_to_run
