@@ -3,7 +3,7 @@
 #SBATCH --output=mpi_1_$PREFIX_$COMPOUND.out
 #SBATCH --error=mpi_1_$PREFIX_$COMPOUND.err
 #SBATCH --ntasks=$PROCESSORS
-#SBATCH --time=00-8:00:00
+#SBATCH --time=00-16:00:00
 #SBATCH --qos=$QOS_bscls
 
 ml intel/2023.2.0
@@ -22,4 +22,4 @@ source activate /gpfs/projects/bsc72/conda_envs/nbdsuite/0.5.0
 
 python -u -m nbdsuite.main $OUTDIR/results/$COMPOUND.yaml
 
-python $REPO/scripts/recover_connectivity.py $LIGSDIR/$COMPOUND_prep.pdb --pdb_target $OUTDIR/results/$COMPOUND/4_adaptive_pele_simulation/complex_2/output/topologies/topology_0.pdb -lc L -lt L
+#python $REPO/scripts/recover_connectivity.py $OUTDIR/results/$COMPOUND/2_pele_pdb_preprocessor/complexes/complex_2_ligand.pdb --pdb_target $OUTDIR/results/$COMPOUND/4_adaptive_pele_simulation/complex_2/output/topologies/topology_0.pdb -lc L -lt L
