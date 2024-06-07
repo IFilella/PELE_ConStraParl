@@ -19,14 +19,10 @@ pipeline:
     pele_perturbation_COM_constraint_constant: 0
     pele_steering_update_frequency: 0
     pele_temperature: 1000
-    pele_anm_frequency: 0
-    #pele_anm_frequency: 4
-    pele_anm_minimizer_non_bonding_list_updated_each_min_step: False
-    #pele_anm_minimizer_non_bonding_list_updated_each_min_step: True
-    pele_minimizer_rmstol: 0.2
-    #pele_minimizer_rmstol: 1.0
-    pele_minimizer_maximum_newton_iterations: 0
-    #pele_minimizer_maximum_newton_iterations: 1
+    pele_anm_frequency: 4
+    pele_anm_minimizer_non_bonding_list_updated_each_min_step: True
+    pele_minimizer_rmstol: 1.0
+    pele_minimizer_maximum_newton_iterations: 1
     pele_perturbation_box_radius: 6
     pele_perturbation_steric_trials: 500
     pele_perturbation_level: 1
@@ -39,3 +35,4 @@ pipeline:
     adaptive_threshold_distance: 8
     adaptive_threshold_calculator_values: [1.75, 2.5, 4, 6]
     adaptive_threshold_calculator_conditions: [1, 0.6, 0.4, 0.0]
+- block: pele_analyzer
