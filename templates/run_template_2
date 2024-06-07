@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=2_$PREFIX_$COMPOUND
-#SBATCH --output=mpi_2_$PREFIX_$COMPOUND.out
-#SBATCH --error=mpi_2_$PREFIX_$COMPOUND.err
+#SBATCH --output=2_$PREFIX_$COMPOUND.out
+#SBATCH --error=2_$PREFIX_$COMPOUND.err
 #SBATCH --ntasks=1
 #SBATCH --time=00-8:00:00
 #SBATCH --qos=$QOS_bscls
