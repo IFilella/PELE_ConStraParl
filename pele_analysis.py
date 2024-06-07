@@ -39,7 +39,7 @@ if __name__ == '__main__':
     molecules_out = glob.glob('%s/*/'%pele_output)
     molecules_out = [molecule_out for molecule_out in molecules_out if '_min' not in molecule_out]
     molecules = [molecule.split('/')[-2] for molecule in molecules_out]
-
+    
     #Get a .csv of all PELE simulations with PELE metrics and if required glide gscore
     f_out =  open('%s_pelemetrics.csv'%outname,'w')
     header = 'molecule,smile,batch,maxtanimoto,charge,glidegscore,all_avgBE,all_minBE,all_BZM,all_BFE,pop_avgBE,pop_minBE,pop_BZM,pop_BFE,lowavg_avgBE,lowavg_minBE,lowavg_BZM,lowavg_BFE,lowBE_avgBE,lowBE_minBE,lowBE_BZM,lowBE_BFE,lowBZM_avgBE,lowBZM_minBE,lowBZM_BZM,lowBZM_BFE,lowBFE_avgBE,lowBFE_minBE,lowBFE_BZM,lowBFE_BFE'
@@ -76,7 +76,7 @@ if __name__ == '__main__':
                 mol = Mol(smile=smile)
                 netcharge = Chem.rdmolops.GetFormalCharge(mol.mol)
         #PELE data
-        pele_data = '%sanalysis/data.csv'%(molecules_out[i])
+        pele_data = '%s4_adaptive_pele_simulation/complex_2/analysis_strain/data.csv'%(molecules_out[i])
         try:
             pele_df = pd.read_csv(pele_data)
         except:
@@ -162,7 +162,7 @@ if __name__ == '__main__':
         f_out.write('%s,%s\n'%(line[idx_minBE],line[idx_metric]))
 
         #Get poses
-        poses_path = '%s%s/analysis/top_poses'%(pele_output,molecule)
+        poses_path = '%s%s/4_adaptive_pele_simulation/complex_2/analysis_strain/top_poses'%(pele_output,molecule)
         poses = glob.glob('%s/*.pdb'%poses_path)
         poses_BE = np.asarray([float(pose.split('BindEner')[1].split('_AtomDist')[0].split('.pdb')[0]) for pose in poses])
         #poses_BE = np.asarray([float(pose.split('BindEner')[1].split('.pdb')[0]) for pose in poses])
