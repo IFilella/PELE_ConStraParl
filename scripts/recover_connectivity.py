@@ -85,7 +85,7 @@ class LigandPDB:
         ligand_lines = self.get_model_ligand_content(model=model).split("\n")
         lig_dict = {}
         for line in ligand_lines:
-            lig_dict[line[12:16].strip()] = line[6:11].strip()
+            lig_dict[line[12:16].strip().upper()] = line[6:11].strip()
         return lig_dict
 
     def add_connectivity(self, new_connects):
@@ -129,9 +129,9 @@ def renum_hetatom(pdb_content):
 
 def create_index_relation_between_connect_and_to_connect(pdb_connected, pdb2connect):
     pdb_connected_names_dict = pdb_connected.get_model_ligand_name_index_dictionary(0)
-    pd2b_connected_names_dict = pdb2connect.get_model_ligand_name_index_dictionary(0)
+    pdb2_connect_names_dict = pdb2connect.get_model_ligand_name_index_dictionary(0)
     index_relations = {}
-    for key, value in pd2b_connected_names_dict.items():
+    for key, value in pdb2_connect_names_dict.items():
         index_relations[pdb_connected_names_dict[key]] = value
     return index_relations
 
