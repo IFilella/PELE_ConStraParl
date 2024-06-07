@@ -60,8 +60,8 @@ if __name__ == '__main__':
     # If needed create an HBlist directory
     if HBlist:
         HBdir = outdir + 'HBlists'
-    if not os.path.isdir(HBdir):
-        os.mkdir(HBdir)
+        if not os.path.isdir(HBdir):
+            os.mkdir(HBdir)
     
     count_preparedLIGS = 0
     prepLIGs = []
