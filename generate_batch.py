@@ -88,7 +88,7 @@ if __name__ == '__main__':
     if strain:
         batchfile2 = open('%s/%s_batch_2.sh'%(outdir, prefix), 'w')
         batchfile3 = open('%s/%s_batch_3.sh'%(outdir, prefix), 'w')
-    for i,compound in enumerate(compounds):
+    for i, compound in enumerate(compounds):
         print('%d %s'%(i+1, compound))
         cmd = 'python scripts/generate_files.py --LIGSdir %s --pref %s --outdir %s --compound %s -n %s --partition %s' % (ligsdir, prefix, outdir, compound, n, partition)
 
