@@ -136,7 +136,7 @@ if __name__ == '__main__':
             if '$LIGSDIR' in line:
                 line = line.replace('$LIGSDIR', ligsdir)
             if '$PREFIX' in line:
-                line = line.replace('$OUTNAME', prefix)
+                line = line.replace('$PREFIX', prefix)
             if '$OUTDIR':
                 line = line.replace('$OUTDIR', outdir)
             if '$COMPOUND' in line:
