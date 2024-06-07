@@ -75,7 +75,7 @@ def boltzmann_weighted(df,metric_label,total_energy_label,T=298.):
 
     return ene_bz
 
-def bindingFreeEnergy(df,metric_label='BindingEnergy',total_energy_label='currentEnergy',T=298.):
+def bindingFreeEnergy(df,metric_label='Binding Energy',total_energy_label='currentEnergy',T=298.):
     total_energy = df[total_energy_label]
     relative_energy = total_energy-total_energy.min()
     Z = np.sum(np.exp(-relative_energy/(K*T)))
@@ -699,7 +699,7 @@ def getCluster(df1,cluster_label):
     """
     return df1[df1['Cluster'] == cluster_label]
 
-def calculateMetrics(df,binding_energy_label='BindingEnergy',total_energy_label='currentEnergy',value_T=298.):
+def calculateMetrics(df,binding_energy_label='Binding Energy',total_energy_label='currentEnergy',value_T=298.):
     """
     Calculate the three scorings (average BE, minimum BE, Boltzman weighted) for the given dataframe
     """
@@ -709,7 +709,7 @@ def calculateMetrics(df,binding_energy_label='BindingEnergy',total_energy_label=
     boltzmann = boltzmann_weighted(df,binding_energy_label,total_energy_label,value_T)
     return average, minimum, boltzmann
 
-def cluster_pop(df,binding_energy_label='BindingEnergy',total_energy_label='currentEnergy',value_T=298.):
+def cluster_pop(df,binding_energy_label='Binding Energy',total_energy_label='currentEnergy',value_T=298.):
     """
     Calculate the metrics for the most populated cluster
     """
@@ -717,7 +717,7 @@ def cluster_pop(df,binding_energy_label='BindingEnergy',total_energy_label='curr
     average, minimum, boltzmann = calculateMetrics(df,binding_energy_label,total_energy_label,value_T=value_T)
     return df, average, minimum, boltzmann
 
-def cluster_energy(df1,binding_energy_label='BindingEnergy',total_energy_label='currentEnergy',value_T=298.):
+def cluster_energy(df1,binding_energy_label='Binding Energy',total_energy_label='currentEnergy',value_T=298.):
     """
     Calculate three scorings for the the cluster with less minimum, average and boltzmann energies.
     """
@@ -731,7 +731,7 @@ def cluster_energy(df1,binding_energy_label='BindingEnergy',total_energy_label='
     for group in df1.groupby(by='Cluster'):
         if group[0].isnumeric():
             df = group[1]
-            be = df['BindingEnergy'].to_numpy()
+            be = df['Binding Energy'].to_numpy()
 
             # Calculating metrics for the different clusters
             average = np.average(be)
