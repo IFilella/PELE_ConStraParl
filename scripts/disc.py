@@ -231,9 +231,9 @@ def statistics(input_folder,
 
                         line = line.split('    ')
 
-                        if 'BindingEnergy' in line:
+                        if 'bindingEnergy' in line:
 
-                            column_be = line.index('BindingEnergy') + 1
+                            column_be = line.index('bindingEnergy') + 1
 
                         else:
 
@@ -241,7 +241,7 @@ def statistics(input_folder,
 
                             #
                             print(
-                                ' -   No BindingEnergy column.')
+                                ' -   No bindingEnergy column.')
                             #
 
                         column_te = line.index('currentEnergy') + 1
@@ -317,7 +317,7 @@ def statistics(input_folder,
 
                     #
                     print(
-                        ' -   Picking BindingEnergy as metric')
+                        ' -   Picking bindingEnergy as metric')
                     #
 
                     be, te, step = file_reader(files,
