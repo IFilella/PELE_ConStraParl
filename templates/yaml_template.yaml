@@ -15,22 +15,31 @@ pipeline:
   options:
     pele_steps: 12
     adaptive_epochs: 20
-    pele_side_chain_prediction_frequency: 1
-    pele_perturbation_COM_constraint_constant: 0
-    pele_steering_update_frequency: 0
     pele_temperature: 1000
+    pele_backbone_constraints_interval: 8
+    pele_backbone_intermediate_constraints: 1
+    pele_backbone_terminal_constraints: 5
     pele_anm_frequency: 4
-    pele_anm_minimizer_non_bonding_list_updated_each_min_step: True
-    pele_minimizer_rmstol: 1.0
+    pele_anm_minimizer_algorithm: TruncatedNewton
+    pele_anm_minimizer_maxit: 1
+    pele_anm_minimizer_maximum_newton_iterations: 25
+    pele_anm_minimizer_alpha_updated: False
+    pele_anm_minimizer_non_bonding_list_updated_each_min_step: False
+    pele_anm_minimizer_rmstol: 0.2
+    pele_minimizer_rmstol: 0.2
+    pele_minimizer_maxit: 3
     pele_minimizer_maximum_newton_iterations: 1
+    pele_side_chain_prediction_frequency: 1
+    pele_steering_update_frequency: 0
+    pele_perturbation_COM_constraint_constant: 0
     pele_perturbation_box_radius: 6
     pele_perturbation_steric_trials: 500
-    pele_perturbation_level: 1
-    #pele_rotation_scaling_factor: [0.05,0.1]
-    #pele_translation_range: [0.25,0.5]
+    pele_perturbation_trials: 10
+    pele_rotation_scaling_factor: [0.05,0.1]
+    pele_translation_range: [0.25,0.5]
     adaptive_spawning_type: epsilon
     adaptive_bias_column: 5
-    adaptive_epsilon: 0.2
+    adaptive_epsilon: 0.25
     adaptive_bias_condition: min
     adaptive_threshold_distance: 8
     adaptive_threshold_calculator_values: [1.75, 2.5, 4, 6]
