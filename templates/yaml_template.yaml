@@ -28,7 +28,7 @@ pipeline:
     pele_anm_minimizer_rmstol: 0.2
     pele_minimizer_rmstol: 0.2
     pele_minimizer_maxit: 3
-    pele_minimizer_maximum_newton_iterations: 1
+    pele_minimizer_maximum_newton_iterations: 65
     pele_side_chain_prediction_frequency: 1
     pele_steering_update_frequency: 0
     pele_perturbation_COM_constraint_constant: 0
