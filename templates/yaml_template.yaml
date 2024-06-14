@@ -35,11 +35,11 @@ pipeline:
     pele_perturbation_box_radius: 6
     pele_perturbation_steric_trials: 500
     pele_perturbation_trials: 10
-    pele_rotation_scaling_factor: [0.05,0.1]
-    pele_translation_range: [0.25,0.5]
+    pele_rotation_scaling_factor: [0.02,0.05]
+    pele_translation_range: [0.1,0.2]
     adaptive_spawning_type: epsilon
     adaptive_bias_column: 5
-    adaptive_epsilon: 0.25
+    adaptive_epsilon: 0.4
     adaptive_bias_condition: min
     adaptive_threshold_distance: 8
     adaptive_threshold_calculator_values: [1.75, 2.5, 4, 6]
