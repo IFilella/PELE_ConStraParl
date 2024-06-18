@@ -826,7 +826,7 @@ def corrector(input_folder,
                 '#SBATCH --output=analysis_strain.out\n'
                 '#SBATCH --error=analysis_strain.err\n'
                 '#SBATCH --ntasks=1\n'
-                '#SBATCH --qos=gp_debug\n'
+                '#SBATCH --qos=gp_bscls\n'
                 '#SBATCH --time=00-00:30:00\n'
                 '\n'
                 'module purge\n'
