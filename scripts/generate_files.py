@@ -53,10 +53,21 @@ if __name__ == '__main__':
                         help='',
                         action='store_true', 
                         default=False)
-    requiredArguments.add_argument('--partition',
+    parser.add_argument('--partition',
                                     dest='partition',
                                     help='MN5 partition either gpp or acc',
                                     required=True)
+    parser.add_argument('--values', 
+            dest='values',
+            help='PELE list of values (same length as conditions',
+            nargs='+',
+            default=[1.75, 2.5, 4.0, 6.0])
+    parser.add_argument('--conditions',
+            dest='conditions',
+            help='PELE list of conditions (same length as values',
+            nargs='+',
+            default=[1.0, 0.6, 0.4, 0.0])
+    
     args = parser.parse_args()
 
     #Parse inputs
@@ -78,6 +89,18 @@ if __name__ == '__main__':
         qos = 'acc'
     else:
         raise ValueError('Partition must be either gpp or acc')
+    values = args.values
+    conditions = args.conditions
+    
+    if len(values) != len(conditions):
+        raise ValueError('Values and conditions must\
+                have the same length')
+    
+    values = [str(v) for v in values]
+    values = '[' + ', '.join(values) + ']'
+    conditions = [str(c) for c in conditions]
+    conditions = '[' + ', '.join(conditions) + ']'
+    
 
     repodir = os.getcwd()
 
@@ -170,6 +193,10 @@ if __name__ == '__main__':
             line = line.replace('$PROCESSORS', n)
         if '$REPO':
             line = line.replace('$REPO', repodir)
+        if '$VALUES':
+            line = line.replace('$VALUES', values)
+        if '$CONDITIONS':
+            line = line.replace('$CONDITIONS', conditions)
         if 'adaptive_epochs' in line:
             if strain or HBconsts:
                 line += '    pele_tasks_metrics:\n'

@@ -47,6 +47,17 @@ if __name__ == '__main__':
                                     dest='partition',
                                     help='MN5 partition either gpp or acc',
                                     required=True)
+    parser.add_argument('--values',
+            dest='values',
+            help='PELE list of values (same length as conditions',
+            nargs='+',
+            default=[1.75, 2.5, 4.0, 6.0])
+    parser.add_argument('--conditions',
+            dest='conditions',
+            help='PELE list of conditions (same length as values',
+            nargs='+',
+            default=[1.0, 0.6, 0.4, 0.0])
+
     args = parser.parse_args()
 
     # Parse inputs
@@ -74,6 +85,12 @@ if __name__ == '__main__':
     partition = args.partition
     if partition != 'gpp' and partition!= 'acc':
         raise ValueError('Partition must be either gpp or acc')
+    values = args.values
+    values = [str(v) for v in values]
+    values = ' '.join(values)
+    conditions = args.conditions
+    conditions = [str(c) for c in conditions]
+    conditions = ' '.join(conditions)
 
     compounds = glob.glob('%s/*_prep.pdb'%(ligsdir))
     compounds = [os.path.basename(compound).split('_prep.pdb')[0] for compound in compounds]
@@ -122,6 +139,8 @@ if __name__ == '__main__':
                         cmd += ' --HBconsts %s %s' % (_grep_out[0], _grep_out[1])
         if strain:
             cmd += ' --strain'
+        cmd += ' --values %s' % values
+        cmd += ' --conditions %s' % conditions
         os.system(cmd)
         batchfile1.write('sbatch -A bsc72 %s/runs/run_%s_1\n' % (outdir, compound))
         if strain:

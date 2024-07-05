@@ -42,6 +42,6 @@ pipeline:
     adaptive_epsilon: 0.4
     adaptive_bias_condition: min
     adaptive_threshold_distance: 8
-    adaptive_threshold_calculator_values: [1.75, 2.5, 4, 6]
-    adaptive_threshold_calculator_conditions: [1, 0.6, 0.4, 0.0]
+    adaptive_threshold_calculator_values: $VALUES
+    adaptive_threshold_calculator_conditions: $CONDITIONS
 - block: pele_analyzer
