@@ -13,7 +13,7 @@ if __name__ == '__main__':
     parser.add_argument('--truncated',dest='truncated',help='',action='store_true',default=False)
     parser.add_argument('--strain',dest='strain',help='', action='store_true',default=False)
     parser.add_argument('--HBanalysis',dest='HBanalysis',help='', action='store_true',default=False)
-    requiredArguments.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True) 
+    requiredArguments.add_argument('--simulation', dest='simulation',help='Choose \'rescoring\' or \'expanded\' simulation type',required=True)
     requiredArguments.add_argument('--partition', dest='partition', help='MN5 partition either gpp or acc', required=True)
     args = parser.parse_args()
 
@@ -107,14 +107,14 @@ if __name__ == '__main__':
             if '$QOS' in line:
                 line = line.replace('$QOS',qos)
             runout2.write(line)
-    
+
         os.system('chmod +x %s/runs/%s/run_%s_2'%(current_dir, outname,compound))
         runinp2.close()
         runout2.close()
 
         runinp3 = open('%s/templates/run_template_3'%current_dir,'r')
         runout3 = open('%s/runs/%s/run_%s_3'%(current_dir, outname, compound),'w')
- 
+
         for line in runinp3:
             if '$LIGSDIR' in line:
                 line = line.replace('$LIGSDIR',ligsdir)
@@ -129,7 +129,7 @@ if __name__ == '__main__':
             if '$QOS' in line:
                 line = line.replace('$QOS',qos)
             runout3.write(line)
-    
+
         os.system('chmod +x %s/runs/%s/run_%s_3'%(current_dir, outname,compound))
         runinp3.close()
         runout3.close()
@@ -139,7 +139,7 @@ if __name__ == '__main__':
         for const in HBconsts:
             runout1.write('\n')
             chain,residue,atom = const[0].split('-')
-            cmd = 'python /gpfs/projects/bsc72/COVID/COVID_VS_analysis/FilteringAndClustering.py %s/results/%s/%s/ -n %s --ie_col 5 --rmsd_col 7 -t output/topologies/conntopology_0.pdb -b 2.5 -g2 %s:%s:%s --minimum_g2_conditions 1 -o filtering_results_HB --generate_plots --hbonds_path hbonds.out'%(current_dir,outname,compound,n,chain,residue,atom)
+            cmd = 'python FilteringAndClustering.py %s/results/%s/%s/ -n %s --ie_col 5 --rmsd_col 7 -t output/topologies/conntopology_0.pdb -b 2.5 -g2 %s:%s:%s --minimum_g2_conditions 1 -o filtering_results_HB --generate_plots --hbonds_path hbonds.out'%(current_dir,outname,compound,n,chain,residue,atom)
             runout1.write(cmd)
             runout1.close()
 
@@ -148,7 +148,7 @@ if __name__ == '__main__':
 
     #if truncated:
     #    yamlinp = open('%s/templates/yaml_template_trunc.yaml'%current_dir,'r')
-   
+
     if simulation == 'rescoring':
         yamlinp = open('%s/templates/yaml_template.yaml'%current_dir,'r')
     elif simulation == 'expanded':
